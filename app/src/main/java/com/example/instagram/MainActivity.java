@@ -1,37 +1,58 @@
 package com.example.instagram;
-
 import android.os.Bundle;
-
+import android.widget.Toast;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
-
 import com.example.instagram.databinding.ActivityMainBinding;
+import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 
 public class MainActivity extends AppCompatActivity {
 
-    private ActivityMainBinding binding;
+    @NonNull
+    ActivityMainBinding binding;
+    ChipNavigationBar navView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        navView = findViewById(R.id.navigation);
 
-        BottomNavigationView navView = findViewById(R.id.nav_view);
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications)
-                .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        NavigationUI.setupWithNavController(binding.navView, navController);
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.nav_fragment, new HomeFragment()).commit();
+        }
+        navView.setItemSelected(R.id.nav_home, true);
+        navView.setOnItemSelectedListener(new ChipNavigationBar.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(int id)
+            {
+                Fragment fragment = null;
+                switch (id) {
+                    case R.id.nav_home:
+                        fragment = new HomeFragment();
+                        break;
+                    case R.id.nav_booking:
+                        fragment = new ChoosingServiceFragment();
+                        break;
+                    case R.id.nav_profile:
+                        fragment = new ProfileFragment();
+                        break;
+                    default:
+                        Toast.makeText(MainActivity.this, "Item selected", Toast.LENGTH_SHORT).show();
+                        return;
+                }
+                if (fragment != null) {
+                    getSupportFragmentManager().beginTransaction().replace(R.id.nav_fragment, fragment).commit();
+                }
+            }
+        });
     }
-
+}
 }

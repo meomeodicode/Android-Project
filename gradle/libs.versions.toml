@@ -14,6 +14,7 @@ googleGmsGoogleServices = "4.4.2"
 firebaseFirestore = "25.1.0"
 
 [libraries]
+gradle_v7-3-0_z = { module = "com.android.tools.build:gradle v7.3.0 " }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

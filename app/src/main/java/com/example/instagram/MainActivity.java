@@ -3,6 +3,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.annotation.NonNull;
@@ -20,6 +21,7 @@ import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 public class MainActivity extends AppCompatActivity {
     private Button rtnToLogin;
     private FirebaseAuth mAuth;
+    private TextView tmp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         rtnToLogin = findViewById(R.id.button2);
         mAuth = FirebaseAuth.getInstance();
+
+        tmp = findViewById(R.id.user_mail);
+        tmp.setText(mAuth.getCurrentUser().getEmail());
         initListener();
     }
 

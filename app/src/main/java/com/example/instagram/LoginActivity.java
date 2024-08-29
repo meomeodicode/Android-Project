@@ -33,6 +33,15 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         initUI();
         initListener();
+
+        checkIfUserIsLoggedIn();
+    }
+
+    private void checkIfUserIsLoggedIn() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null && currentUser.getEmail() != null) {
+            navigateToLoginWithAccount(currentUser.getEmail());
+        }
     }
 
     @Override
@@ -88,6 +97,13 @@ public class LoginActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    private void navigateToLoginWithAccount(String email) {
+        Intent intent = new Intent(this, LoginWithAccountActivity.class);
+        intent.putExtra("email", email);
+        startActivity(intent);
+        finish();
     }
 
     private void navigateToMainActivity () {

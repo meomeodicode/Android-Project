@@ -5,6 +5,7 @@ plugins {
 android {
     namespace = "com.example.instagram"
     compileSdk = 34
+    //Test
 
     defaultConfig {
         applicationId = "com.example.instagram"

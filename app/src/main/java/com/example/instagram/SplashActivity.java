@@ -19,8 +19,7 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_splash); // Uncomment and set your layout if needed
-
+        setContentView(R.layout.activity_splash);
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -31,23 +30,26 @@ public class SplashActivity extends AppCompatActivity {
 
     private void startNextActivity() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        //If user==null, not logging in
         if (user == null) {
             navigateToLoginActivity();
-        } else {
+        }
+        else {
             user.reload().addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
                         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-                            navigateToMainActivity();
-                        } else {
+                            navigateToLoginActivity();
+                        }
+                        else {
                             FirebaseAuth.getInstance().signOut();
                             navigateToLoginActivity();
                         }
                     } else {
-                        // Error occurred while reloading user data
                         Log.e("UserVerification", "Error reloading user", task.getException());
                         handleReloadError();
+                        navigateToLoginActivity();
                     }
                 }
             });
@@ -59,6 +61,7 @@ public class SplashActivity extends AppCompatActivity {
         startActivity(intent);
         finish();
     }
+
     private void navigateToMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
@@ -67,6 +70,5 @@ public class SplashActivity extends AppCompatActivity {
 
     private void handleReloadError() {
         Log.e("SplashActivity", "Error reloading user data. Navigating to login.");
-        navigateToLoginActivity();
     }
 }

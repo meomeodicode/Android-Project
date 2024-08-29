@@ -1,5 +1,8 @@
 package com.example.instagram;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.annotation.NonNull;
@@ -10,49 +13,36 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import com.example.instagram.databinding.ActivityMainBinding;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 
 public class MainActivity extends AppCompatActivity {
-
-    @NonNull
-    ActivityMainBinding binding;
-    ChipNavigationBar navView;
+    private Button rtnToLogin;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
-        navView = findViewById(R.id.navigation);
+        setContentView(R.layout.activity_main);
+        rtnToLogin = findViewById(R.id.button2);
+        mAuth = FirebaseAuth.getInstance();
+        initListener();
+    }
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.nav_fragment, new HomeFragment()).commit();
-        }
-        navView.setItemSelected(R.id.nav_home, true);
-        navView.setOnItemSelectedListener(new ChipNavigationBar.OnItemSelectedListener() {
+    private void initListener() {
+        rtnToLogin.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemSelected(int id)
-            {
-                Fragment fragment = null;
-                switch (id) {
-                    case R.id.nav_home:
-                        fragment = new HomeFragment();
-                        break;
-                    case R.id.nav_booking:
-                        fragment = new ChoosingServiceFragment();
-                        break;
-                    case R.id.nav_profile:
-                        fragment = new ProfileFragment();
-                        break;
-                    default:
-                        Toast.makeText(MainActivity.this, "Item selected", Toast.LENGTH_SHORT).show();
-                        return;
-                }
-                if (fragment != null) {
-                    getSupportFragmentManager().beginTransaction().replace(R.id.nav_fragment, fragment).commit();
-                }
+            public void onClick(View v) {
+                navigateToLogin();
             }
         });
     }
-}
+
+    private void navigateToLogin() {
+        mAuth.signOut();
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
 }

@@ -2,7 +2,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="#FFFFFF"
+    android:paddingTop="20dp">
+
+    <ImageButton
+        android:id="@+id/back_button"
+        android:contentDescription="back"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:background="@color/white"
+        android:src="@drawable/back_icon"/>
 
     <ImageView
         android:id="@+id/logo"
@@ -22,7 +31,9 @@
         android:text="Sign Up"
         android:textColor="#000000"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:paddingTop="10dp"
+        android:paddingBottom="20dp"/>
 
     <!-- Name EditText -->
     <EditText

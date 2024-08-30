@@ -86,15 +86,5 @@
         android:textColor="#3897F0"
         android:textSize="14sp" />
 
-    <TextView
-        android:id="@+id/new_to_instagram"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="32dp"
-        android:text="New to Instagram? Sign up"
-        android:textColor="#A0A0A0"
-        android:textSize="14sp" />
 
 </RelativeLayout>

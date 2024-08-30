@@ -28,16 +28,14 @@ public class LoginWithAccountActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private String email;
 
-    private TextView toLogin;
+    private TextView toLogin, forgotPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_screen_with_account);
-
         mAuth = FirebaseAuth.getInstance();
         email = getIntent().getStringExtra("email");
-
         initUI();
         initListener();
     }
@@ -46,7 +44,7 @@ public class LoginWithAccountActivity extends AppCompatActivity {
         editPassword = findViewById(R.id.password);
         loginButton = findViewById(R.id.login_button);
         toLogin = findViewById(R.id.login_with_another_account);
-
+        forgotPassword = findViewById(R.id.forgot_password);
         // Display the user's email
         TextView emailTextView = findViewById(R.id.username);
         emailTextView.setText(email);
@@ -67,6 +65,15 @@ public class LoginWithAccountActivity extends AppCompatActivity {
                 Intent intent = new Intent(LoginWithAccountActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();
+            }
+        });
+
+        forgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                        Intent intent = new Intent(LoginWithAccountActivity.this, ForgotPasswordActivity.class);
+                        startActivity(intent);
+                        finish();
             }
         });
     }

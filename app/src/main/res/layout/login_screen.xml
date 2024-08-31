@@ -54,14 +54,14 @@
             android:text="Login"
             android:id="@+id/btn_login"
             android:padding="12dp"
-            android:textColor="@color/light_dark"
+            android:textColor="@color/dim_white"
             android:background="@drawable/white_rounded_button"/>
 
         <Button
             android:id="@+id/button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/dim_white"
+            android:backgroundTint="@color/blue"
             android:layout_gravity="center_horizontal"
             android:layout_alignParentBottom="true"
             android:text="Create new account" />

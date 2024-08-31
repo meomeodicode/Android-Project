@@ -12,6 +12,8 @@ navigationFragment = "2.7.7"
 navigationUi = "2.7.7"
 googleGmsGoogleServices = "4.4.2"
 firebaseFirestore = "25.1.0"
+firebaseDatabase = "21.0.0"
+firebaseStorage = "21.0.0"
 
 [libraries]
 gradle_v7-3-0_z = { module = "com.android.tools.build:gradle v7.3.0 " }
@@ -26,6 +28,8 @@ lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-view
 navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
 navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
+firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
+firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

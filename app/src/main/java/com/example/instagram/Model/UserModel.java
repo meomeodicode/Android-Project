@@ -3,14 +3,14 @@ package com.example.instagram.Model;
 public class UserModel {
     private String id;
     private String userName;
-    private String fullName;
+    private String email;
     private String imageUrl;
     private String bio;
 
     public UserModel(String id, String username, String fullname, String avatar, String bio) {
         this.id = id;
         this.userName = username;
-        this.fullName = fullname;
+        this.email = fullname;
         this.imageUrl = avatar;
         this.bio = bio;
     }
@@ -31,11 +31,11 @@ public class UserModel {
     public void setUsername(String username) {
         this.userName = username;
     }
-    public String getFullname() {
-        return fullName;
+    public String getEmail() {
+        return email;
     }
-    public void setFullname(String fullname) {
-        this.fullName = fullname;
+    public void setEmail(String fullname) {
+        this.email = fullname;
     }
     public String getImageurl() {
         return imageUrl;

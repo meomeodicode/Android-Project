@@ -18,11 +18,16 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
 
 public class SignUpActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private EditText editEmail, editPassword, editName;
     private Button signUpButton;
+    private DatabaseReference dbReference;
 
     private ImageButton backButton;
 
@@ -60,32 +65,52 @@ public class SignUpActivity extends AppCompatActivity {
     }
     public void onClickSignUp() {
         mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+
         String email = editEmail.getText().toString().trim();
         String password = editPassword.getText().toString().trim();
-        String name = editName.toString();
+        String name = editName.getText().toString().trim();
+
         if (email.isEmpty() || password.isEmpty() || name.isEmpty()) {
             Toast.makeText(SignUpActivity.this, "Please fill in all fields.", Toast.LENGTH_SHORT).show();
             return;
         }
-            mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if (task.isSuccessful()) {
-                        navigateToMainActivity();
+
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if (task.isSuccessful()) {
+                    FirebaseUser currentUser = mAuth.getCurrentUser();
+                    if (currentUser != null) {
+                        String userID = currentUser.getUid();
+                        dbReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userID);
+                        HashMap<String, Object> map = new HashMap<>();
+                        map.put("id", userID);
+                        map.put("username", name.toLowerCase());
+                        map.put("email", email);
+                        map.put("imageurl", "");
+                        map.put("bio", "");
+
+                        dbReference.setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    startActivity(intent);
+                                    finishAffinity();
+                                } else {
+                                    Toast.makeText(SignUpActivity.this, "Failed to create user data.", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+                    } else {
+                        Toast.makeText(SignUpActivity.this, "Failed to get current user.", Toast.LENGTH_SHORT).show();
                     }
-                    else {
-                        Log.w("Sign Up", "createUserWithEmail:failure", task.getException());
-                        Toast.makeText(SignUpActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
-                    }
+                } else {
+                    Toast.makeText(SignUpActivity.this, "Sign Up Failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 }
-            });
-        }
-    private void navigateToMainActivity()
-    {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finishAffinity();
+            }
+        });
     }
 }
 

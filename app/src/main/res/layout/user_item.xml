@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="username"
-            android:id="@+id/username"
+            android:id="@+id/usernameInCard"
             android:maxLines="1"
             android:textStyle="bold"
             android:textColor="@color/black"/>
@@ -33,7 +33,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/fullname"
+            android:id="@+id/emailInCard"
             android:maxLines="1"
             android:text="Email"/>
 

@@ -11,6 +11,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
+import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.instagram.Model.UserModel;
@@ -73,12 +76,13 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
                     SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS", MODE_PRIVATE).edit();
                     editor.putString("profileid", user.getId());
                     editor.apply();
-                    ((FragmentActivity) mContext).
-                            getSupportFragmentManager().
-                            beginTransaction().
-                            replace(R.id.nav_host_fragment_activity_main,
-                            new ProfileFragment2()).commit();
-                }
+                    NavController navController = Navigation.findNavController((FragmentActivity) mContext, R.id.nav_host_fragment_activity_main);
+                    NavOptions navOptions = new NavOptions.Builder()
+                        .setPopUpTo(R.id.navigation_home, false)
+                        .setLaunchSingleTop(true)
+                        .build();
+                    navController.navigate(R.id.navigation_search_user_profile, null, navOptions);
+            }
         });
     }
 

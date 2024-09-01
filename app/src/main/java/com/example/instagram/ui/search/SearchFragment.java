@@ -58,7 +58,6 @@ public class SearchFragment extends Fragment {
                 }
                 return true;
             }
-
             @Override
             public boolean onQueryTextChange(String newText) {
                 if (newText.isEmpty()) {
@@ -81,7 +80,6 @@ public class SearchFragment extends Fragment {
         Query query = dbReference.orderByChild("username")
                 .startAt(input)
                 .endAt(input + "\uf8ff");
-
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

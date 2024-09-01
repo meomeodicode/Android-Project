@@ -89,7 +89,6 @@ public class SignUpActivity extends AppCompatActivity {
                         map.put("email", email);
                         map.put("imageurl", "");
                         map.put("bio", "");
-
                         dbReference.setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {

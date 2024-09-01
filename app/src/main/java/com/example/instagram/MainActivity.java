@@ -71,8 +71,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void navigateToLogin() {
-        mAuth.signOut();
-        Intent intent = new Intent(this, LoginActivity.class);
+        //mAuth.signOut();
+        Intent intent = new Intent(this, LoginWithAccountActivity.class);
         startActivity(intent);
         finish();
     }

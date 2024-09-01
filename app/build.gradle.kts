@@ -38,9 +38,7 @@ dependencies {
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
     implementation(libs.firebase.firestore)
-
     implementation("de.hdodenhof:circleimageview:3.1.0")
-    //
     /* implementation(libs.firebase.storage)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.database)*/

@@ -35,7 +35,6 @@
         android:paddingTop="10dp"
         android:paddingBottom="20dp"/>
 
-    <!-- Name EditText -->
     <EditText
         android:id="@+id/name"
         android:layout_width="match_parent"
@@ -46,11 +45,10 @@
         android:layout_marginTop="16dp"
         android:hint="Name"
         android:padding="12dp"
-        android:background="@color/dim_white"
+        android:background="@color/white"
         android:textColor="#000000"
         android:inputType="textPersonName" />
 
-    <!-- Email EditText -->
     <EditText
         android:id="@+id/email"
         android:layout_width="match_parent"
@@ -61,11 +59,10 @@
         android:layout_marginTop="16dp"
         android:hint="Email"
         android:padding="12dp"
-        android:background="@color/dim_white"
+        android:background="@color/white"
         android:textColor="#000000"
         android:inputType="textEmailAddress" />
 
-    <!-- Password EditText -->
     <EditText
         android:id="@+id/password"
         android:layout_width="match_parent"
@@ -76,11 +73,10 @@
         android:layout_marginTop="16dp"
         android:hint="Password"
         android:padding="12dp"
-        android:background="@color/dim_white"
+        android:background="@color/white"
         android:textColor="#000000"
         android:inputType="textPassword" />
 
-    <!-- Sign Up Button -->
     <Button
         android:id="@+id/signup_button"
         android:layout_width="match_parent"

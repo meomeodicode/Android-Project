@@ -42,7 +42,6 @@ public class ProfileFragment2 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.found_user_profile, container, false);
-
         initializeViews(view);
         setupFirebase();
         loadUserData();
@@ -109,7 +108,7 @@ public class ProfileFragment2 extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 long followersCount = dataSnapshot.exists() ? dataSnapshot.getChildrenCount() : 0;
-                userFollower.setText(String.valueOf(followersCount) + " Followers");
+                userFollower.setText(String.valueOf(followersCount));
             }
 
             @Override
@@ -124,7 +123,7 @@ public class ProfileFragment2 extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 long followingCount = dataSnapshot.exists() ? dataSnapshot.getChildrenCount() : 0;
-                userFollowing.setText(String.valueOf(followingCount) + " Following");
+                userFollowing.setText(String.valueOf(followingCount));
             }
 
             @Override

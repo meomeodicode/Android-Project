@@ -65,18 +65,39 @@
     </RelativeLayout>
 
     <TextView
+        android:id="@+id/numLikes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="10 Likes"
+        android:textStyle="bold"
         android:textColor="@color/black"
         android:textSize="14sp"/>
+
+    <TextView
+        android:id="@+id/publisher"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="username"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:textSize="14sp"/>
+
     <TextView
         android:id="@+id/text_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Description(Change)"
+        android:text="Description"
         android:textColor="@color/black"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/comments"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp"
+        android:text="View All 10 Comments"
+        android:textColor="@color/grey"
         android:textSize="14sp" />
 
 </LinearLayout>

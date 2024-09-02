@@ -1,31 +1,48 @@
 package com.example.instagram.post;
 
 public class Post {
-    private String username;
+    private String postId;
+    private String publisher;
     private String description;
-    private int profileImageResource;
-    private int postImageResource;
+    private String postImage;
 
-    public Post(String username, String description, int profileImageResource, int postImageResource) {
-        this.username = username;
+    public Post(String postId, String publisher, String description, String postImageResource) {
+        this.postId = postId;
+        this.publisher = publisher;
         this.description = description;
-        this.profileImageResource = profileImageResource;
-        this.postImageResource = postImageResource;
+        this.postImage = postImage;
+    }
+    public Post(){};
+
+    public String getPostId() {
+        return postId;
     }
 
-    public String getUsername() {
-        return username;
+    public void setPostId(String postId) {
+        this.postId = postId;
+    }
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public int getProfileImageResource() {
-        return profileImageResource;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public int getPostImageResource() {
-        return postImageResource;
+    public String getPostImage() {
+        return postImage;
+    }
+
+    public void setPostImage(String postImage) {
+        this.postImage = postImage;
     }
 }

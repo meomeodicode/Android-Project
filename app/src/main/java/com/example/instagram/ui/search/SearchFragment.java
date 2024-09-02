@@ -42,7 +42,7 @@ public class SearchFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         searchBar = view.findViewById(R.id.search_bar);
         userList = new ArrayList<>();
-        userAdapter = new UsersAdapter(getContext(), userList, true);
+        userAdapter = new UsersAdapter(getContext(), userList);
         recyclerView.setAdapter(userAdapter);
         dbReference = FirebaseDatabase.getInstance().getReference("Users");
         setupSearchView();

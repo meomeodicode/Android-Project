@@ -41,7 +41,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
     private List<UserModel> Users;
     private FirebaseUser firebaseUser;
 
-    public UsersAdapter(Context context, List<UserModel> users, boolean isFragment) {
+    public UsersAdapter(Context context, List<UserModel> users) {
         mContext = context;
         Users = users;
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -85,8 +85,6 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
             }
         });
     }
-
-
     @Override
     public int getItemCount() {
         return Users.size();

@@ -72,7 +72,6 @@ public class ProfileFragment2 extends Fragment {
     private void loadUserData() {
         SharedPreferences prefs = getContext().getSharedPreferences("PREFS", MODE_PRIVATE);
         String profileId = prefs.getString("profileid", "none");
-
         if (!profileId.equals("none")) {
             userRef.child(profileId).addValueEventListener(new ValueEventListener() {
                 @Override
@@ -86,7 +85,6 @@ public class ProfileFragment2 extends Fragment {
                         Toast.makeText(getContext(), "User not found", Toast.LENGTH_SHORT).show();
                     }
                 }
-
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                     Toast.makeText(getContext(), "Failed to load user data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
@@ -96,31 +94,22 @@ public class ProfileFragment2 extends Fragment {
             Toast.makeText(getContext(), "No profile ID found", Toast.LENGTH_SHORT).show();
         }
     }
-
-
     private void updateUI() {
-        if (displayedUser != null) {
-            username.setText(displayedUser.getUsername() != null ? displayedUser.getUsername() : "No username");
-            userBio.setText(displayedUser.getBio() != null ? displayedUser.getBio() : "No bio available");
-            //avatar.setText(displayedUser.getImageUrl() != null ? displayedUser.getImageUrl() : "No image URL");
-
-            if (displayedUser != null && displayedUser.getId() != null) {
-                fetchFollowingCount();
-                fecthFollowerCount();
-                checkFollowStatus();
-            } else {
-                Toast.makeText(getContext(), "Failed to load user data", Toast.LENGTH_SHORT).show();
-            }
-
+        username.setText(displayedUser.getUsername() != null ? displayedUser.getUsername() : "No username");
+        userBio.setText(displayedUser.getBio() != null ? displayedUser.getBio() : "No bio available");
+        if (displayedUser != null & displayedUser.getId()!=null) {
+            fetchFollowingCount();
+            fetchFollowerCount();
+            checkFollowStatus();
         }
     }
 
-    private void fecthFollowerCount() {
+    private void fetchFollowerCount() {
         followRef.child(displayedUser.getId()).child("followers").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                long followersCount = dataSnapshot.getChildrenCount();
-                userFollower.setText(String.valueOf(followersCount) + "Followers");
+                long followersCount = dataSnapshot.exists() ? dataSnapshot.getChildrenCount() : 0;
+                userFollower.setText(String.valueOf(followersCount) + " Followers");
             }
 
             @Override
@@ -134,13 +123,13 @@ public class ProfileFragment2 extends Fragment {
         followRef.child(displayedUser.getId()).child("following").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                long followingCount = dataSnapshot.getChildrenCount();
-                userFollowing.setText(String.valueOf(followingCount) + "Following");
+                long followingCount = dataSnapshot.exists() ? dataSnapshot.getChildrenCount() : 0;
+                userFollowing.setText(String.valueOf(followingCount) + " Following");
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), "Failed to fetch followers count", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Failed to fetch following count", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -158,63 +147,18 @@ public class ProfileFragment2 extends Fragment {
                     }
                 });
     }
+
     private void toggleFollow() {
         boolean isFollowing = followBtn.getText().toString().equals("Following");
         DatabaseReference userFollowingRef = followRef.child(currentUser.getUid()).child("following").child(displayedUser.getId());
-        DatabaseReference userFollowersRef = followRef.child(displayedUser.getId()).child("follower").child(currentUser.getUid());
+        DatabaseReference userFollowersRef = followRef.child(displayedUser.getId()).child("followers").child(currentUser.getUid());
         if (isFollowing) {
             userFollowingRef.removeValue();
             userFollowersRef.removeValue();
-            updateFollowCounts(-1);
         } else {
             userFollowingRef.setValue(true);
             userFollowersRef.setValue(true);
-            updateFollowCounts(1);
         }
-    }
-
-    private void updateFollowCounts(int change) {
-        userRef.child(currentUser.getUid()).child("following")
-                .runTransaction(new Transaction.Handler() {
-                    @NonNull
-                    @Override
-                    public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
-                        Integer currentValue = mutableData.getValue(Integer.class);
-                        if (currentValue == null) {
-                            mutableData.setValue(1);
-                        } else {
-                            mutableData.setValue(currentValue + change);
-                        }
-                        return Transaction.success(mutableData);
-                    }
-
-                    @Override
-                    public void onComplete(@Nullable DatabaseError databaseError, boolean committed, @Nullable DataSnapshot dataSnapshot) {
-                        if (!committed) {
-                        }
-                    }
-                });
-
-        userRef.child(displayedUser.getId()).child("followers")
-                .runTransaction(new Transaction.Handler() {
-                    @NonNull
-                    @Override
-                    public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
-                        Integer currentValue = mutableData.getValue(Integer.class);
-                        if (currentValue == null) {
-                            mutableData.setValue(1);
-                        } else {
-                            mutableData.setValue(currentValue + change);
-                        }
-                        return Transaction.success(mutableData);
-                    }
-
-                    @Override
-                    public void onComplete(@Nullable DatabaseError databaseError, boolean committed, @Nullable DataSnapshot dataSnapshot) {
-                        if (committed) {
-                            loadUserData();
-                        }
-                    }
-                });
+        loadUserData();
     }
 }

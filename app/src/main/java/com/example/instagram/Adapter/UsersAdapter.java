@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.instagram.Model.UserModel;
@@ -70,15 +72,15 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         userHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                    SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS", MODE_PRIVATE).edit();
-                    editor.putString("profileid", user.getId());
-                    editor.apply();
-                    ((FragmentActivity) mContext).
-                            getSupportFragmentManager().
-                            beginTransaction().
-                            replace(R.id.nav_host_fragment_activity_main,
-                            new ProfileFragment2()).commit();
-                }
+                SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS", MODE_PRIVATE).edit();
+                editor.putString("profileid", user.getId());
+                editor.apply();
+
+                // Assuming you're within a FragmentActivity or the context has access to a NavController
+                NavController navController = Navigation.findNavController((FragmentActivity) mContext, R.id.nav_host_fragment_activity_main);
+                navController.navigate(R.id.navigation_search_profile);  // This assumes you have set up a navigation action to the profile fragment
+            }
+
         });
     }
 

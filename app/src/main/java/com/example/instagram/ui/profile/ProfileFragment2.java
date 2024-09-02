@@ -1,5 +1,8 @@
 package com.example.instagram.ui.profile;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,33 +70,48 @@ public class ProfileFragment2 extends Fragment {
     }
 
     private void loadUserData() {
-        userRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    displayedUser = dataSnapshot.getValue(UserModel.class);
-                    if (displayedUser != null) {
-                        updateUI();
+        SharedPreferences prefs = getContext().getSharedPreferences("PREFS", MODE_PRIVATE);
+        String profileId = prefs.getString("profileid", "none");
+
+        if (!profileId.equals("none")) {
+            userRef.child(profileId).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        displayedUser = dataSnapshot.getValue(UserModel.class);
+                        if (displayedUser != null) {
+                            updateUI();
+                        }
+                    } else {
+                        Toast.makeText(getContext(), "User not found", Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    Toast.makeText(getContext(), "User not found", Toast.LENGTH_SHORT).show();
                 }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getContext(), "Failed to load user data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Toast.makeText(getContext(), "Failed to load user data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            Toast.makeText(getContext(), "No profile ID found", Toast.LENGTH_SHORT).show();
+        }
     }
+
 
     private void updateUI() {
         if (displayedUser != null) {
             username.setText(displayedUser.getUsername() != null ? displayedUser.getUsername() : "No username");
             userBio.setText(displayedUser.getBio() != null ? displayedUser.getBio() : "No bio available");
             //avatar.setText(displayedUser.getImageUrl() != null ? displayedUser.getImageUrl() : "No image URL");
-            fetchFollowingCount();
-            fecthFollowerCount();
-            checkFollowStatus();
+
+            if (displayedUser != null && displayedUser.getId() != null) {
+                fetchFollowingCount();
+                fecthFollowerCount();
+                checkFollowStatus();
+            } else {
+                Toast.makeText(getContext(), "Failed to load user data", Toast.LENGTH_SHORT).show();
+            }
+
         }
     }
 

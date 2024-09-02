@@ -4,6 +4,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,30 +14,38 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.instagram.Adapter.Photo;
 import com.example.instagram.Model.UserModel;
 import com.example.instagram.R;
+import com.example.instagram.post.Post;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.database.annotations.Nullable;
 
-public class ProfileFragment2 extends Fragment {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class ProfileSearchedFragment extends Fragment {
     private RecyclerView recyclerView;
-    private Button followBtn;
+    private Button followBtn, editProfile;
     private TextView userPost, userFollowing, userFollower, userBio, username, avatar;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private UserModel displayedUser;
     private DatabaseReference userRef, followRef;
+    private List<Post> postList;
+    //private List<Post> postList_saves;
+    private Photo postThumbnailAdapter;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -45,13 +54,17 @@ public class ProfileFragment2 extends Fragment {
         initializeViews(view);
         setupFirebase();
         loadUserData();
+        fetchPhoto();
         return view;
     }
 
     private void initializeViews(View view) {
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        LinearLayoutManager mLayoutManager = new GridLayoutManager(getContext(), 3);
+        recyclerView.setLayoutManager(mLayoutManager);
+        postList = new ArrayList<>();
+        postThumbnailAdapter  = new Photo(getContext(), postList);
         followBtn = view.findViewById(R.id.btn_follow_profile);
         username = view.findViewById(R.id.username);
         userPost = view.findViewById(R.id.user_post);
@@ -59,6 +72,10 @@ public class ProfileFragment2 extends Fragment {
         userBio = view.findViewById(R.id.user_bio);
         userFollowing = view.findViewById(R.id.user_following);
         followBtn.setOnClickListener(v -> toggleFollow());
+        recyclerView.setLayoutManager(mLayoutManager);
+        postList = new ArrayList<>();
+        postThumbnailAdapter = new Photo(getContext(), postList);
+        recyclerView.setAdapter(postThumbnailAdapter);
     }
 
     private void setupFirebase() {
@@ -146,6 +163,46 @@ public class ProfileFragment2 extends Fragment {
                     }
                 });
     }
+
+    private void fetchPhoto() {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts");
+        Log.d("fetchPhoto", "Starting to fetch photos");
+
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                postList.clear();
+                Log.d("fetchPhoto", "Cleared postList");
+                SharedPreferences prefs = getContext().getSharedPreferences("PREFS", MODE_PRIVATE);
+                String profileId = prefs.getString("profileid", "none");
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Post post = snapshot.getValue(Post.class);
+
+                    // Log the post data being processed
+                    if (post != null) {
+                        Log.d("fetchPhoto", "Processing post: " + post.getPostImage() + ", Publisher: " + post.getPublisher());
+                        if (post.getPublisher().equals(profileId)) {
+                            postList.add(post);
+                            Log.d("fetchPhoto", "Added post to postList: " + post.getPostImage());
+                        }
+                    } else {
+                        Log.d("fetchPhoto", "Post is null, skipping");
+                    }
+                }
+                Log.d("fetchPhoto", "Post list size before reversing: " + postList.size());
+                Collections.reverse(postList);
+                Log.d("fetchPhoto", "Post list size after reversing: " + postList.size());
+
+                postThumbnailAdapter.notifyDataSetChanged();
+                Log.d("fetchPhoto", "Adapter notified of data change");
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("fetchPhoto", "Failed to fetch photos: " + error.getMessage());
+            }
+        });
+    }
+
 
     private void toggleFollow() {
         boolean isFollowing = followBtn.getText().toString().equals("Following");

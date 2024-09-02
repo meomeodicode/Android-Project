@@ -37,7 +37,7 @@
 
     <fragment
         android:id="@+id/navigation_search_user_profile"
-        android:name="com.example.instagram.ui.profile.ProfileFragment2"
+        android:name="com.example.instagram.ui.profile.ProfileSearchedFragment"
         android:label=""
         tools:layout="@layout/found_user_profile" />
 

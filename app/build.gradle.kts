@@ -53,6 +53,7 @@ dependencies {
     implementation("com.google.android.material:material:1.8.0")
     implementation("com.vanniktech:android-image-cropper:4.6.0")
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    /*implementation("com.rengwuxian.materialedittext:library:2.1.4")*/
     /*
     implementation("com.google.android.material:material:1.12.0")
     implementation ("com.github.ismaeldivita:chip-navigation-bar:1.4.0")

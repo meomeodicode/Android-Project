@@ -1,10 +1,14 @@
 package com.example.instagram;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+
+import com.example.instagram.ui.home.HomeFragment;
+import com.example.instagram.ui.profile.ProfileFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,42 +23,44 @@ import com.google.firebase.auth.FirebaseUser;
 public class MainActivity extends AppCompatActivity {
 
     private Button rtnToLogin;
-    private FirebaseAuth mAuth;
     private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Inflate the layout using ViewBinding
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         rtnToLogin = binding.button2;
-        mAuth = FirebaseAuth.getInstance();
 
-        FirebaseUser currentUser = mAuth.getCurrentUser();
         initListener();
 
-        BottomNavigationView navView = binding.navView;
+//        Bundle intent = getIntent().getExtras();
+//        if(intent != null) {
+//            String publisher = intent.getString("publisherid");
+//
+//            SharedPreferences.Editor editor = getSharedPreferences("PREFS", MODE_PRIVATE).edit();
+//            editor.putString("profileid", publisher);
+//            editor.apply();
+//
+//            getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_activity_main, new ProfileFragment()).commit();
+//        }
+//        else {
+//            getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_activity_main, new HomeFragment()).commit();
+//        }
 
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_profile, R.id.navigation_notifications, R.id.navigation_add, R.id.navigation_search)
-                .build();
+        BottomNavigationView navView = binding.navView;
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
-        // NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
 
-        // Set custom handling for the Add button
         navView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 if (item.getItemId() == R.id.navigation_add) {
-                    // Start the PostActivity when the Add button is clicked
                     startActivity(new Intent(MainActivity.this, PostActivity.class));
                     return true;
                 } else {
-                    // Let NavigationUI handle the other items
                     return NavigationUI.onNavDestinationSelected(item, navController);
                 }
             }
@@ -71,9 +77,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void navigateToLogin() {
-        //mAuth.signOut();
         Intent intent = new Intent(this, LoginWithAccountActivity.class);
         startActivity(intent);
         finish();
     }
 }
+

@@ -99,7 +99,6 @@ public class HomeFragment extends Fragment {
                         }
                     }
                 }
-
                 postAdapter.notifyDataSetChanged();
             }
 

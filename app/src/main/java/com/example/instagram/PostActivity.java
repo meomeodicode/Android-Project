@@ -96,7 +96,6 @@ public class PostActivity extends AppCompatActivity {
     }
 
     private void startCrop() {
-        // Create CropImageOptions and set the necessary options
         CropImageOptions options = new CropImageOptions();
         options.guidelines = Guidelines.ON;
         cropImageLauncher.launch(new CropImageContractOptions(null, options));

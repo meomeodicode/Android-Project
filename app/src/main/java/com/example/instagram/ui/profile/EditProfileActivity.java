@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +22,7 @@ import com.canhub.cropper.CropImageContractOptions;
 import com.canhub.cropper.CropImageOptions;
 import com.canhub.cropper.CropImageView;
 import com.example.instagram.Model.UserModel;
+import com.example.instagram.PostActivity;
 import com.example.instagram.R;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -43,26 +45,38 @@ import java.util.HashMap;
 public class EditProfileActivity extends AppCompatActivity {
 
     private ImageView close, imageProfile;
+    private Uri imageUri;
+    private String myUrl = "";
     private TextView save, avatarChange;
     private com.google.android.material.textfield.TextInputEditText username, bio;
-
+    private ProgressBar progressBar;
     private FirebaseUser firebaseUser;
     private Uri mImageUri;
     private StorageTask<UploadTask.TaskSnapshot> uploadTask;
     private StorageReference storageRef;
-
+    private final ActivityResultLauncher<CropImageContractOptions> cropImageLauncher = registerForActivityResult(
+            new CropImageContract(), result -> {
+                if (result.isSuccessful()) {
+                    imageUri = result.getUriContent();
+                    imageProfile.setImageURI(imageUri);
+                } else {
+                    Exception exception = result.getError();
+                    Toast.makeText(EditProfileActivity.this, "Crop failed: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+    );
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_profile);
 
         close = findViewById(R.id.close);
-        imageProfile = findViewById(R.id.image_profile);
+        imageProfile = findViewById(R.id.image_editprofile);
         save = findViewById(R.id.save);
         avatarChange = findViewById(R.id.changeAvatar);
         username = findViewById(R.id.editUsername);
         bio = findViewById(R.id.editBio);
-
+        progressBar = findViewById(R.id.indeterminateBar);
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         storageRef = FirebaseStorage.getInstance().getReference("uploads");
 
@@ -83,37 +97,12 @@ public class EditProfileActivity extends AppCompatActivity {
                 Toast.makeText(EditProfileActivity.this, "Failed to load user data", Toast.LENGTH_SHORT).show();
             }
         });
-
         close.setOnClickListener(view -> finish());
-
         save.setOnClickListener(view -> updateProfile(username.getText().toString(), bio.getText().toString()));
-
         avatarChange.setOnClickListener(view -> startCrop());
-
         imageProfile.setOnClickListener(view -> startCrop());
     }
-    private final ActivityResultLauncher<CropImageContractOptions> cropImageLauncher = registerForActivityResult(
-            new CropImageContract(), result -> {
-                if (result.isSuccessful()) {
-                    mImageUri = result.getUriContent();
-                    if (mImageUri != null) {
-                        imageProfile.setImageURI(mImageUri);
-                        uploadImage();
-                    }
-                } else {
-                    Exception exception = result.getError();
-                    Toast.makeText(EditProfileActivity.this, "Crop failed: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            }
-    );
 
-    /*private void startCropActivity() {
-        cropImageLauncher.launch(
-                new CropImageContractOptions(null, CropImage.CropImageOptions.DEFAULT)
-                        .setAspectRatio(1, 1)
-                        .setFixAspectRatio(true)
-        );
-    }*/
     private void startCrop()
     {
             CropImageOptions options = new CropImageOptions();
@@ -129,20 +118,11 @@ public class EditProfileActivity extends AppCompatActivity {
         Toast.makeText(EditProfileActivity.this, "Successfully updated!", Toast.LENGTH_SHORT).show();
     }
 
-    private String getFileExtension(Uri uri) {
-        ContentResolver cR = getContentResolver();
-        MimeTypeMap mime = MimeTypeMap.getSingleton();
-        return mime.getExtensionFromMimeType(cR.getType(uri));
-    }
-
     private void uploadImage() {
-        final ProgressDialog pd = new ProgressDialog(this);
-        pd.setMessage("Uploading");
-        pd.show();
 
         if (mImageUri != null) {
+            progressBar.setVisibility(View.VISIBLE);
             final StorageReference fileReference = storageRef.child(System.currentTimeMillis() + "." + getFileExtension(mImageUri));
-
             uploadTask = fileReference.putFile(mImageUri);
             uploadTask.continueWithTask((Continuation<UploadTask.TaskSnapshot, Task<Uri>>) task -> {
                 if (!task.isSuccessful()) {
@@ -152,27 +132,29 @@ public class EditProfileActivity extends AppCompatActivity {
             }).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     Uri downloadUri = task.getResult();
-                    String miUrlOk = downloadUri.toString();
-
+                    String gottenImageUrl = downloadUri.toString();
                     DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
                     HashMap<String, Object> map1 = new HashMap<>();
-                    map1.put("imageurl", miUrlOk);
+                    map1.put("imageurl", gottenImageUrl);
                     reference.updateChildren(map1);
-
-                    pd.dismiss();
-
+                    Toast.makeText(EditProfileActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(EditProfileActivity.this, "Failed", Toast.LENGTH_SHORT).show();
-                    pd.dismiss();
+                    Toast.makeText(EditProfileActivity.this, "Failed to upload image", Toast.LENGTH_SHORT).show();
                 }
+                progressBar.setVisibility(View.GONE);
             }).addOnFailureListener(e -> {
                 Toast.makeText(EditProfileActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                pd.dismiss();
+                progressBar.setVisibility(View.GONE);
             });
 
         } else {
             Toast.makeText(EditProfileActivity.this, "No image selected", Toast.LENGTH_SHORT).show();
-            pd.dismiss();
         }
     }
+    private String getFileExtension(Uri uri) {
+        ContentResolver cR = getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(cR.getType(uri));
+    }
 }
+

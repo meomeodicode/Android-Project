@@ -75,7 +75,7 @@ public class ProfileFragment extends Fragment {
         username = view.findViewById(R.id.profile_username);
         userPost = view.findViewById(R.id.profile_posts_count);
         userFollower = view.findViewById(R.id.profile_followers_count);
-        userFollowing = view.findViewById(R.id.user_following);
+        userFollowing = view.findViewById(R.id.profile_following_count);
         addToPhotoBtn = view.findViewById(R.id.profile_add_to_photos_button);
         menuBtn = view.findViewById(R.id.profile_menu_button);
         shareLink = view.findViewById(R.id.profile_share_link);
@@ -135,7 +135,6 @@ public class ProfileFragment extends Fragment {
         if (displayedUser != null & displayedUser.getId()!=null) {
             fetchFollowingCount();
             fetchFollowerCount();
-            checkFollowStatus();
         }
     }
 
@@ -167,20 +166,6 @@ public class ProfileFragment extends Fragment {
                 Toast.makeText(getContext(), "Failed to fetch following count", Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    private void checkFollowStatus() {
-        followRef.child(currentUser.getUid()).child("following").child(displayedUser.getId())
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        followBtn.setText(dataSnapshot.exists() ? "Following" : "Follow");
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Toast.makeText(getContext(), "Failed to check follow status", Toast.LENGTH_SHORT).show();
-                    }
-                });
     }
 
     private void fetchPhoto() {

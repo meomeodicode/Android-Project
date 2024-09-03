@@ -55,6 +55,8 @@
 
         <activity android:name=".PostActivity"/>
         <activity android:name="CommentActivity"/>
+        <activity android:name=".SinglePostDetailFragment"/>
+        <activity android:name=".ui.profile.EditProfileActivity"/>
         <activity
             android:name="com.canhub.cropper.CropImageActivity"
             android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />

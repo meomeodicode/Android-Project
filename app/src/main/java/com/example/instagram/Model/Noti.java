@@ -2,7 +2,7 @@ package com.example.instagram.Model;
 
 public class Noti {
     private String userID;
-    private String content;
+    private String description;
     private String postId;
     private Boolean isPost;
 
@@ -10,10 +10,10 @@ public class Noti {
     public Noti() {
     }
 
-    public Noti(String userID, String content, String postId, Boolean isPost) {
+    public Noti(String userID, String content, String postID, Boolean isPost) {
         this.userID = userID;
-        this.content = content;
-        this.postId = postId;
+        this.description = content;
+        this.postId = postID;
         this.isPost = isPost;
     }
 
@@ -25,12 +25,12 @@ public class Noti {
         this.userID = userID;
     }
 
-    public String getContent() {
-        return content;
+    public String getDescription() {
+        return description;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getPostId() {

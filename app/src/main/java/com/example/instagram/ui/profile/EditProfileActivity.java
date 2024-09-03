@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log; // Add this import for logging
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
@@ -44,6 +45,8 @@ import java.util.HashMap;
 
 public class EditProfileActivity extends AppCompatActivity {
 
+    private static final String TAG = "EditProfileActivity"; // Tag for logging
+
     private ImageView close, imageProfile;
     private Uri imageUri;
     private String myUrl = "";
@@ -58,13 +61,16 @@ public class EditProfileActivity extends AppCompatActivity {
             new CropImageContract(), result -> {
                 if (result.isSuccessful()) {
                     imageUri = result.getUriContent();
+                    Log.d(TAG, "Image cropped successfully: " + imageUri);
                     imageProfile.setImageURI(imageUri);
                 } else {
                     Exception exception = result.getError();
+                    Log.e(TAG, "Crop failed: " + exception.getMessage());
                     Toast.makeText(EditProfileActivity.this, "Crop failed: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
     );
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,50 +83,89 @@ public class EditProfileActivity extends AppCompatActivity {
         username = findViewById(R.id.editUsername);
         bio = findViewById(R.id.editBio);
         progressBar = findViewById(R.id.indeterminateBar);
+
+        // Log the firebase user status
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (firebaseUser != null) {
+            Log.d(TAG, "Current User ID: " + firebaseUser.getUid());
+        } else {
+            Log.e(TAG, "FirebaseUser is null");
+        }
+
         storageRef = FirebaseStorage.getInstance().getReference("uploads");
 
+        // Fetch user details from Firebase
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 UserModel user = dataSnapshot.getValue(UserModel.class);
                 if (user != null) {
+                    Log.d(TAG, "Retrieved User ID: " + firebaseUser.getUid());
+                    Log.d(TAG, "User Data: Username - " + user.getUsername() + ", Bio - " + user.getBio());
                     username.setText(user.getUsername());
                     bio.setText(user.getBio());
                     Glide.with(getApplicationContext()).load(user.getImageUrl()).into(imageProfile);
+                } else {
+                    Log.e(TAG, "UserModel is null for User ID: " + firebaseUser.getUid());
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "Failed to load user data: " + databaseError.getMessage());
                 Toast.makeText(EditProfileActivity.this, "Failed to load user data", Toast.LENGTH_SHORT).show();
             }
         });
-        close.setOnClickListener(view -> finish());
-        save.setOnClickListener(view -> updateProfile(username.getText().toString(), bio.getText().toString()));
-        avatarChange.setOnClickListener(view -> startCrop());
-        imageProfile.setOnClickListener(view -> startCrop());
+
+        close.setOnClickListener(view -> {
+            Log.d(TAG, "Close button clicked, finishing activity");
+            finish();
+        });
+
+        save.setOnClickListener(view -> {
+            Log.d(TAG, "Save button clicked");
+            updateProfile(username.getText().toString(), bio.getText().toString());
+        });
+
+        avatarChange.setOnClickListener(view -> {
+            Log.d(TAG, "Avatar change button clicked");
+            startCrop();
+        });
+
+        imageProfile.setOnClickListener(view -> {
+            Log.d(TAG, "Profile image clicked for cropping");
+            startCrop();
+        });
     }
 
-    private void startCrop()
-    {
-            CropImageOptions options = new CropImageOptions();
-            options.guidelines = CropImageView.Guidelines.ON;
-            cropImageLauncher.launch(new CropImageContractOptions(null, options));
+    private void startCrop() {
+        Log.d(TAG, "Starting image crop");
+        CropImageOptions options = new CropImageOptions();
+        options.guidelines = CropImageView.Guidelines.ON;
+        cropImageLauncher.launch(new CropImageContractOptions(null, options));
     }
+
     private void updateProfile(String username, String bio) {
+        Log.d(TAG, "Updating profile with Username: " + username + ", Bio: " + bio);
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
         HashMap<String, Object> map = new HashMap<>();
         map.put("username", username);
         map.put("bio", bio);
-        reference.updateChildren(map);
-        Toast.makeText(EditProfileActivity.this, "Successfully updated!", Toast.LENGTH_SHORT).show();
+        reference.updateChildren(map).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Log.d(TAG, "Profile updated successfully for User ID: " + firebaseUser.getUid());
+                Toast.makeText(EditProfileActivity.this, "Successfully updated!", Toast.LENGTH_SHORT).show();
+            } else {
+                Log.e(TAG, "Profile update failed for User ID: " + firebaseUser.getUid());
+                Toast.makeText(EditProfileActivity.this, "Failed to update profile", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void uploadImage() {
-
         if (mImageUri != null) {
+            Log.d(TAG, "Uploading image: " + mImageUri);
             progressBar.setVisibility(View.VISIBLE);
             final StorageReference fileReference = storageRef.child(System.currentTimeMillis() + "." + getFileExtension(mImageUri));
             uploadTask = fileReference.putFile(mImageUri);
@@ -133,28 +178,40 @@ public class EditProfileActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     Uri downloadUri = task.getResult();
                     String gottenImageUrl = downloadUri.toString();
+                    Log.d(TAG, "Image uploaded successfully: " + gottenImageUrl);
+
                     DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
                     HashMap<String, Object> map1 = new HashMap<>();
                     map1.put("imageurl", gottenImageUrl);
-                    reference.updateChildren(map1);
-                    Toast.makeText(EditProfileActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
+                    reference.updateChildren(map1).addOnCompleteListener(task1 -> {
+                        if (task1.isSuccessful()) {
+                            Log.d(TAG, "Image URL updated successfully in Firebase for User ID: " + firebaseUser.getUid());
+                            Toast.makeText(EditProfileActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Log.e(TAG, "Failed to update image URL in Firebase for User ID: " + firebaseUser.getUid());
+                        }
+                    });
                 } else {
+                    Log.e(TAG, "Image upload failed for User ID: " + firebaseUser.getUid());
                     Toast.makeText(EditProfileActivity.this, "Failed to upload image", Toast.LENGTH_SHORT).show();
                 }
                 progressBar.setVisibility(View.GONE);
             }).addOnFailureListener(e -> {
+                Log.e(TAG, "Image upload error: " + e.getMessage());
                 Toast.makeText(EditProfileActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                 progressBar.setVisibility(View.GONE);
             });
-
         } else {
+            Log.w(TAG, "No image selected for upload");
             Toast.makeText(EditProfileActivity.this, "No image selected", Toast.LENGTH_SHORT).show();
         }
     }
+
     private String getFileExtension(Uri uri) {
         ContentResolver cR = getContentResolver();
         MimeTypeMap mime = MimeTypeMap.getSingleton();
-        return mime.getExtensionFromMimeType(cR.getType(uri));
+        String extension = mime.getExtensionFromMimeType(cR.getType(uri));
+        Log.d(TAG, "File extension: " + extension);
+        return extension;
     }
 }
-

@@ -52,8 +52,12 @@ public class ProfileFragment extends Fragment {
     private List<Post> postList;
     private List<Post> postList_saves;
     private Photo postThumbnailAdapter;
-
-
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        updateProfileIdInPrefs(currentUserId);
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -104,31 +108,54 @@ public class ProfileFragment extends Fragment {
         followRef = FirebaseDatabase.getInstance().getReference().child("Follow");
     }
 
+    private void updateProfileIdInPrefs(String newProfileId) {
+        SharedPreferences prefs = getContext().getSharedPreferences("PREFS", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("profileid", newProfileId);
+        editor.apply();
+    }
+
+
     private void loadUserData() {
         SharedPreferences prefs = getContext().getSharedPreferences("PREFS", MODE_PRIVATE);
         String profileId = prefs.getString("profileid", "none");
+
+        // Log the profileId to debug
+        Log.d("loadUserData", "Retrieved profileId from SharedPreferences: " + profileId);
+
         if (!profileId.equals("none")) {
             userRef.child(profileId).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
+                        Log.d("loadUserData", "DataSnapshot exists for profileId: " + profileId);
+
                         displayedUser = dataSnapshot.getValue(UserModel.class);
+
                         if (displayedUser != null) {
+                            Log.d("loadUserData", "UserModel successfully retrieved: " + displayedUser.getUsername());
                             updateUI();
+                        } else {
+                            Log.e("loadUserData", "UserModel is null for profileId: " + profileId);
                         }
                     } else {
+                        Log.e("loadUserData", "No data found for profileId: " + profileId);
                         Toast.makeText(getContext(), "User not found", Toast.LENGTH_SHORT).show();
                     }
                 }
+
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.e("loadUserData", "Failed to load user data: " + databaseError.getMessage());
                     Toast.makeText(getContext(), "Failed to load user data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
+            Log.e("loadUserData", "No profile ID found in SharedPreferences");
             Toast.makeText(getContext(), "No profile ID found", Toast.LENGTH_SHORT).show();
         }
     }
+
     private void updateUI() {
         username.setText(displayedUser.getUsername() != null ? displayedUser.getUsername() : "No username");
         userBio.setText(displayedUser.getBio() != null ? displayedUser.getBio() : "No bio available");

@@ -43,7 +43,7 @@
 
     <fragment
         android:id="@+id/navigation_post_detail"
-        android:name="com.example.instagram.SinglePostDetail"
+        android:name="com.example.instagram.SinglePostDetailFragment"
         android:label=""
         tools:layout="@layout/item_post" />
 

@@ -4,6 +4,8 @@ import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,9 +51,9 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
     @Override
     public void onBindViewHolder(@NonNull NotificationsAdapter.NotiViewHolder holder, int position) {
         Noti notification = Notifications.get(position);
-        holder.content.setText(notification.getContent());
+        holder.content.setText(notification.getDescription());
         getUser(holder.avatar, holder.username, notification.getUserID());
-        if (notification.getIsPost()) {
+        if (notification != null && notification.getIsPost()) {
             holder.postImage.setVisibility(View.VISIBLE);
             getPostImage(holder.postImage, notification.getPostId());
         } else {
@@ -74,9 +76,9 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
                 .build();
 
         if (notification.getIsPost()) {
-            editor.putString("postid", notification.getPostId());
-            editor.apply();
-            navController.navigate(R.id.navigation_post_detail, null, navOptions);
+            Bundle bundle = new Bundle();
+            bundle.putString("postid", notification.getPostId());
+            navController.navigate(R.id.navigation_post_detail, bundle, navOptions);
         } else {
             editor.putString("profileid", notification.getUserID());
             editor.apply();
@@ -89,6 +91,12 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
     }
 
     private void getPostImage(ImageView postImage, String postID) {
+        Log.d("getPostImage", "Post ID from Firebase: " + postID);
+        if (postID == null || postID.isEmpty()) {
+            Log.e("getPostImage", "Post ID is null or empty!");
+            return;
+        }
+
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
                 .child("Posts").child(postID);
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -96,13 +104,16 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Post post = dataSnapshot.getValue(Post.class);
                 if (post != null) {
+                    Log.d("getPostImage", "Post Image URL: " + post.getPostImage());
                     Glide.with(mContext).load(post.getPostImage()).into(postImage);
+                } else {
+                    Log.e("getPostImage", "Post is null for Post ID: " + postID);
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                // Handle possible errors
+                Log.e("getPostImage", "Database Error: " + databaseError.getMessage());
             }
         });
     }
@@ -110,7 +121,6 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
     private void getUser(ImageView avatar, TextView username, String userID) {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
                 .child("Users").child(userID);
-
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -120,10 +130,8 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
                     username.setText(user.getUsername());
                 }
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                // Handle possible errors
             }
         });
     }

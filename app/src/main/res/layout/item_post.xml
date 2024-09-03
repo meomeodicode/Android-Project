@@ -40,7 +40,6 @@
             android:focusable="true" />
     </LinearLayout>
 
-    <!-- Post Image -->
     <ImageView
         android:id="@+id/image_post"
         android:layout_width="match_parent"

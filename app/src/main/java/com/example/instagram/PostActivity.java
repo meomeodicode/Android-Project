@@ -43,7 +43,7 @@ public class PostActivity extends AppCompatActivity {
     private String myUrl = "";
     private StorageTask uploadTask;
     private StorageReference storageReference;
-    private TextView post;
+    private TextView post, error;
     private ImageView image_post, close;
     private EditText description;
     private Button retryButton;
@@ -53,11 +53,17 @@ public class PostActivity extends AppCompatActivity {
                 if (result.isSuccessful()) {
                     imageUri = result.getUriContent();
                     image_post.setImageURI(imageUri);
+                    description.setVisibility(View.VISIBLE);
                     retryButton.setVisibility(View.GONE);
+                    error.setVisibility(View.GONE);
+                    post.setVisibility(View.VISIBLE);
                 } else {
                     Exception exception = result.getError();
                     Toast.makeText(PostActivity.this, "Crop failed: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
                     retryButton.setVisibility(View.VISIBLE);
+                    description.setVisibility(View.GONE);
+                    error.setVisibility(View.VISIBLE);
+                    post.setVisibility(View.GONE);
                 }
             }
     );
@@ -72,6 +78,7 @@ public class PostActivity extends AppCompatActivity {
         retryButton = findViewById(R.id.retry_button);
         close = findViewById(R.id.close);
         post = findViewById(R.id.post);
+        error = findViewById(R.id.error);
 
         close.setOnClickListener(new View.OnClickListener() {
             @Override

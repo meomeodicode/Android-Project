@@ -7,8 +7,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_alignParentStart="true"
             android:src="@drawable/ic_close"
             android:id="@+id/close"/>
@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:text="POST"
             android:id="@+id/post"
-            android:textSize="16sp"
+            android:textSize="18sp"
             android:layout_marginEnd="10dp"
             android:layout_centerVertical="true"
             android:layout_alignParentEnd="true"
@@ -41,15 +41,29 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:hint="Description"
+            android:padding="11dp"
+            android:background="@drawable/custome_edit_text"
             android:textSize="20dp"
-            android:maxLines="5"
+            android:maxLines="3"
             android:id="@+id/description"/>
     </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/error"
+        android:layout_gravity="center"
+        android:textAlignment="center"
+        android:text="Fail to upload !"
+        android:textSize="20dp"
+        android:textColor="@color/darkRed"
+        android:visibility="gone"/>
+
     <Button
         android:id="@+id/retry_button"
+        android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Retry"
-        android:visibility="gone" />
-
+        android:visibility="gone"/>
 </LinearLayout>

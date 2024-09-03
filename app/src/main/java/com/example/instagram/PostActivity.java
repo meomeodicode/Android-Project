@@ -51,15 +51,13 @@ public class PostActivity extends AppCompatActivity {
     private final ActivityResultLauncher<CropImageContractOptions> cropImageLauncher = registerForActivityResult(
             new CropImageContract(), result -> {
                 if (result.isSuccessful()) {
-                    // Use the cropped image URI
                     imageUri = result.getUriContent();
                     image_post.setImageURI(imageUri);
-                    retryButton.setVisibility(View.GONE);  // Hide retry button if successful
+                    retryButton.setVisibility(View.GONE);
                 } else {
-                    // Handle the error
                     Exception exception = result.getError();
                     Toast.makeText(PostActivity.this, "Crop failed: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
-                    retryButton.setVisibility(View.VISIBLE);  // Show retry button if failed
+                    retryButton.setVisibility(View.VISIBLE);
                 }
             }
     );

@@ -222,7 +222,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 UserModel user = snapshot.getValue(UserModel.class);
                 if(user.getImageUrl() == null) {
-                    imageProfile.setImageResource(R.drawable.ic_profile);
+                    imageProfile.setImageResource(R.drawable.ic_profile_filled);
                 }
                 else {
                     Glide.with(mContext).load(user.getImageUrl()).into(imageProfile);

@@ -4,7 +4,6 @@ public class Comment {
     private String comment;
     private String publisher;
 
-    // Default constructor required for calls to DataSnapshot.getValue(Comment.class)
     public Comment() {
     }
 
@@ -13,7 +12,6 @@ public class Comment {
         this.publisher = publisher;
     }
 
-    // Getter and Setter methods
     public String getComment() {
         return comment;
     }

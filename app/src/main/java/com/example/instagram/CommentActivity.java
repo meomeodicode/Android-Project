@@ -110,7 +110,7 @@ public class CommentActivity extends AppCompatActivity {
                 if (user.getImageUrl() != null) {
                     Glide.with(getApplicationContext()).load(user.getImageUrl()).into(imageProfile);
                 } else {
-                    imageProfile.setImageResource(R.drawable.ic_profile);
+                    imageProfile.setImageResource(R.drawable.ic_profile_filled);
                 }
             }
 

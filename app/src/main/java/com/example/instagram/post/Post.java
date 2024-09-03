@@ -5,14 +5,17 @@ public class Post {
     private String publisher;
     private String description;
     private String postImage;
+    private long timestamp;
 
-    public Post(String postId, String publisher, String description, String postImageResource) {
+    public Post(String postId, String publisher, String description, String postImage, long timestamp) {
         this.postId = postId;
         this.publisher = publisher;
         this.description = description;
         this.postImage = postImage;
+        this.timestamp = timestamp;
     }
-    public Post(){};
+
+    public Post() {}
 
     public String getPostId() {
         return postId;
@@ -44,5 +47,13 @@ public class Post {
 
     public void setPostImage(String postImage) {
         this.postImage = postImage;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
 }

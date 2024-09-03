@@ -67,25 +67,21 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         username.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Store the profile ID in SharedPreferences
+
                 SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS", MODE_PRIVATE).edit();
                 editor.putString("profileid", post.getPublisher());
                 editor.apply();
 
-                // Get the NavController
                 NavController navController = Navigation.findNavController((FragmentActivity) mContext, R.id.nav_host_fragment_activity_main);
 
-                // Determine the current destination and set popUpTo accordingly
                 int currentDestinationId = navController.getCurrentDestination().getId();
                 int popUpToId = (currentDestinationId == R.id.navigation_search) ? R.id.navigation_search : R.id.navigation_home;
 
-                // Create NavOptions with setPopUpTo to avoid duplicate UserProfiles in the stack
                 NavOptions navOptions = new NavOptions.Builder()
-                        .setPopUpTo(popUpToId, true) // Clear up to the destination, excluding it
-                        .setLaunchSingleTop(true) // Prevent multiple instances of the fragment
+                        .setPopUpTo(popUpToId, true)
+                        .setLaunchSingleTop(true)
                         .build();
 
-                // Navigate to the UserProfile fragment
                 navController.navigate(R.id.navigation_search_user_profile, null, navOptions);
             }
         });
@@ -95,6 +91,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         else {
             holder.description.setVisibility((View.VISIBLE));
             holder.description.setText(post.getDescription());
+        }
+
+        if (post.getTimestamp() != 0) {
+            holder.timestamp.setText(getTimeAgo(post.getTimestamp()));
+        } else {
+            holder.timestamp.setText("Just now");
         }
 
         publisherInfo(holder.imageProfile, holder.username, holder.publisher, post.getPublisher());
@@ -146,7 +148,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
         public ImageView imageProfile, postImageResource, like, comment, save;
-        public TextView username, likes, publisher, description, comments;
+        public TextView username, likes, publisher, description, comments, timestamp;
 
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -161,7 +163,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             likes = itemView.findViewById(R.id.numLikes);
             publisher = itemView.findViewById(R.id.publisher);
             description = itemView.findViewById(R.id.text_description);
-            comments = itemView.findViewById((R.id.comments));
+            comments = itemView.findViewById(R.id.comments);
+            timestamp = itemView.findViewById(R.id.timestamp);
         }
     }
 
@@ -234,5 +237,21 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             @Override
             public void onCancelled(@NonNull DatabaseError error) {}
         });
+    }
+    private String getTimeAgo(long timestamp) {
+        long now = System.currentTimeMillis();
+        long diff = now - timestamp;
+
+        if (diff < 60 * 1000) {
+            return "just now";
+        } else if (diff < 2 * 60 * 1000) {
+            return "a minute ago";
+        } else if (diff < 60 * 60 * 1000) {
+            return (diff / (60 * 1000)) + " minutes ago";
+        } else if (diff < 24 * 60 * 60 * 1000) {
+            return (diff / (60 * 60 * 1000)) + " hours ago";
+        } else {
+            return (diff / (24 * 60 * 60 * 1000)) + " days ago";
+        }
     }
 }

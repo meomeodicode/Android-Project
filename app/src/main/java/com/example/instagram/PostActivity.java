@@ -139,7 +139,6 @@ public class PostActivity extends AppCompatActivity {
                         throw task.getException();
                     }
 
-                    // Continue with the task to get the download URL
                     return fileReference.getDownloadUrl();
                 }
             }).addOnCompleteListener(new OnCompleteListener<Uri>() {
@@ -151,11 +150,15 @@ public class PostActivity extends AppCompatActivity {
 
                         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts");
                         String postId = reference.push().getKey();
+                        long timestamp = System.currentTimeMillis();
+
                         HashMap<String, Object> hashMap = new HashMap<>();
                         hashMap.put("postId", postId);
                         hashMap.put("postImage", myUrl);
                         hashMap.put("description", description.getText().toString());
                         hashMap.put("publisher", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                        hashMap.put("timestamp", timestamp);
+
                         assert postId != null;
                         reference.child(postId).setValue(hashMap);
 

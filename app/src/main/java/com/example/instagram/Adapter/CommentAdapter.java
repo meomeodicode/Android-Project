@@ -101,7 +101,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                     if (user.getImageUrl() != null) {
                         Glide.with(mContext).load(user.getImageUrl()).into(imageView);
                     } else {
-                        imageView.setImageResource(R.drawable.ic_profile);
+                        imageView.setImageResource(R.drawable.ic_profile_filled);
                     }
                 }
             }

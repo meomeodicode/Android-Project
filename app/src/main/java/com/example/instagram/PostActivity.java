@@ -3,6 +3,7 @@ package com.example.instagram;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -50,15 +51,13 @@ public class PostActivity extends AppCompatActivity {
     private final ActivityResultLauncher<CropImageContractOptions> cropImageLauncher = registerForActivityResult(
             new CropImageContract(), result -> {
                 if (result.isSuccessful()) {
-                    // Use the cropped image URI
                     imageUri = result.getUriContent();
                     image_post.setImageURI(imageUri);
-                    retryButton.setVisibility(View.GONE);  // Hide retry button if successful
+                    retryButton.setVisibility(View.GONE);
                 } else {
-                    // Handle the error
                     Exception exception = result.getError();
                     Toast.makeText(PostActivity.this, "Crop failed: " + exception.getMessage(), Toast.LENGTH_SHORT).show();
-                    retryButton.setVisibility(View.VISIBLE);  // Show retry button if failed
+                    retryButton.setVisibility(View.VISIBLE);
                 }
             }
     );
@@ -98,11 +97,15 @@ public class PostActivity extends AppCompatActivity {
     }
 
     private void startCrop() {
-        // Create CropImageOptions and set the necessary options
+
         CropImageOptions options = new CropImageOptions();
         options.guidelines = Guidelines.ON;
 
-        // Launch the crop image activity
+        options.backgroundColor = Color.argb(150, 0, 0, 0);
+
+        options.borderLineColor = Color.RED;
+        options.borderLineThickness = getResources().getDisplayMetrics().density * 2;
+
         cropImageLauncher.launch(new CropImageContractOptions(null, options));
     }
 

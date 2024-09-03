@@ -54,10 +54,10 @@
         </activity>
 
         <activity android:name=".PostActivity"/>
-        <activity android:name="CommentActivity"/>
+        <activity android:name=".CommentActivity"/>
         <activity
             android:name="com.canhub.cropper.CropImageActivity"
-            android:theme="@style/Base.Theme.AppCompat" />
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
     </application>
 
 </manifest>

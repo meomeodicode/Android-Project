@@ -3,6 +3,7 @@ package com.example.instagram;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -98,11 +99,15 @@ public class PostActivity extends AppCompatActivity {
     }
 
     private void startCrop() {
-        // Create CropImageOptions and set the necessary options
+
         CropImageOptions options = new CropImageOptions();
         options.guidelines = Guidelines.ON;
 
-        // Launch the crop image activity
+        options.backgroundColor = Color.argb(150, 0, 0, 0);
+
+        options.borderLineColor = Color.RED;
+        options.borderLineThickness = getResources().getDisplayMetrics().density * 2;
+
         cropImageLauncher.launch(new CropImageContractOptions(null, options));
     }
 

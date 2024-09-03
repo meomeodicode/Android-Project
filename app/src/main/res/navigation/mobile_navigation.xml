@@ -41,4 +41,10 @@
         android:label=""
         tools:layout="@layout/found_user_profile" />
 
+    <fragment
+        android:id="@+id/navigation_post_detail"
+        android:name="com.example.instagram.SinglePostDetail"
+        android:label=""
+        tools:layout="@layout/item_post" />
+
 </navigation>

@@ -194,7 +194,6 @@ public class ProfileFragment extends Fragment {
                 Log.d("fetchPhoto", "Post list size before reversing: " + postList.size());
                 Collections.reverse(postList);
                 Log.d("fetchPhoto", "Post list size after reversing: " + postList.size());
-
                 postThumbnailAdapter.notifyDataSetChanged();
                 Log.d("fetchPhoto", "Adapter notified of data change");
             }

@@ -33,7 +33,6 @@ public class LoginActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         initUI();
         initListener();
-
         checkIfUserIsLoggedIn();
     }
 

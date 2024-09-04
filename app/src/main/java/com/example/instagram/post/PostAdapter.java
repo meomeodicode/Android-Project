@@ -5,12 +5,13 @@ import static android.content.Context.MODE_PRIVATE;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.navigation.NavController;
@@ -22,6 +23,8 @@ import com.bumptech.glide.Glide;
 import com.example.instagram.CommentActivity;
 import com.example.instagram.Model.UserModel;
 import com.example.instagram.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -29,10 +32,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.firestore.auth.User;
 
-import org.w3c.dom.Text;
-
+import java.util.HashMap;
 import java.util.List;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
@@ -112,10 +113,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                             .child("Likes")
                             .child(post.getPostId())
                             .child(firebaseUser.getUid()).setValue(true);
+                    addNotification(post.getPublisher(), post.getPostId());
                 }
                 else {
                     FirebaseDatabase.getInstance().getReference().child("Likes").child(post.getPostId())
                             .child(firebaseUser.getUid()).removeValue();
+                    deleteNotifications(post.getPublisher(), post.getPostId());
                 }
             }
         });
@@ -253,5 +256,38 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         } else {
             return (diff / (24 * 60 * 60 * 1000)) + " days ago";
         }
+    }
+    private void addNotification(String userid, String postID){
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications").child(userid);
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("userID", firebaseUser.getUid());
+        hashMap.put("description", "liked your post");
+        hashMap.put("postId", postID);
+        hashMap.put("isPost", true);
+        reference.push().setValue(hashMap);
+    }
+
+    private void deleteNotifications(final String postid, String userid){
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications").child(userid);
+        reference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                    if (snapshot.child("postid").getValue().equals(postid)){
+                        snapshot.getRef().removeValue()
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        Toast.makeText(mContext, "Deleted!", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }

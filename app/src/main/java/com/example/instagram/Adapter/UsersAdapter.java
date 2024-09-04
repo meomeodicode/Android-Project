@@ -29,11 +29,13 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
     private Context mContext;
     private List<UserModel> Users;
     private FirebaseUser firebaseUser;
+    private boolean isFragment;
 
-    public UsersAdapter(Context context, List<UserModel> users) {
+    public UsersAdapter(Context context, List<UserModel> users, boolean isFragment) {
         mContext = context;
         Users = users;
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        isFragment = isFragment;
     }
 
     public class UserViewHolder extends RecyclerView.ViewHolder {

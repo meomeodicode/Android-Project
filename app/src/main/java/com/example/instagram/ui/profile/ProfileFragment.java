@@ -17,11 +17,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.instagram.Adapter.Photo;
+import com.example.instagram.FollowListActivity;
 import com.example.instagram.Model.UserModel;
 import com.example.instagram.R;
 import com.example.instagram.post.Post;
@@ -42,6 +42,7 @@ import java.util.List;
 public class ProfileFragment extends Fragment {
     private RecyclerView recyclerView, recyclerView_saves;
     private Button followBtn, editProfile;
+    private String profileid;
     private ImageButton menuBtn, shareLink;
     private TextView userPost, userFollowing, userFollower, userBio, username;
     private ShapeableImageView avatar;
@@ -69,10 +70,6 @@ public class ProfileFragment extends Fragment {
         loadUserData();
         initEdit();
         TabLayout tabLayout = view.findViewById(R.id.profile_tab_layout);
-        TabLayout.Tab firstTab = tabLayout.getTabAt(0);
-        if (firstTab != null) {
-            firstTab.select();
-        }
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -93,7 +90,18 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onTabReselected(TabLayout.Tab tab) {}
         });
-
+        userFollowing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFollowingList();
+            }
+        });
+        userFollower.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFollowersList();
+            }
+        });
         return view;
     }
 
@@ -106,6 +114,8 @@ public class ProfileFragment extends Fragment {
         recyclerView_saves.setHasFixedSize(true);
         recyclerView_saves.setLayoutManager(new GridLayoutManager(getContext(), 3));
 
+        SharedPreferences prefs = getContext().getSharedPreferences("PREFS", MODE_PRIVATE);
+        profileid = prefs.getString("profileid", "none");
         avatar = view.findViewById(R.id.profile_avatar);
         username = view.findViewById(R.id.profile_username);
         userPost = view.findViewById(R.id.profile_posts_count);
@@ -194,6 +204,29 @@ public class ProfileFragment extends Fragment {
         }
     }
 
+    private void getFollowersList()
+    {
+        userFollower.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), FollowListActivity.class);
+                intent.putExtra("id", profileid);
+                intent.putExtra("title", "followers");
+                startActivity(intent);
+            }
+        });
+    }
+    private void getFollowingList() {
+        userFollowing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), FollowListActivity.class);
+                intent.putExtra("id", profileid);
+                intent.putExtra("title", "following");
+                startActivity(intent);
+            }
+        });
+    }
     private void fetchFollowerCount() {
         followRef.child(displayedUser.getId()).child("followers").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

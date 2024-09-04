@@ -37,6 +37,7 @@ public class CommentActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private CommentAdapter commentAdapter;
     private List<Comment> commentList;
+    private List<String> commentIds;
     EditText addComment;
     ImageView imageProfile;
     TextView post;
@@ -65,13 +66,14 @@ public class CommentActivity extends AppCompatActivity {
         imageProfile = findViewById(R.id.image_profile);
         post = findViewById(R.id.post);
         commentList = new ArrayList<>();
-        commentAdapter = new CommentAdapter(this, commentList);
-        recyclerView.setAdapter(commentAdapter);
-
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        commentIds = new ArrayList<>();
         Intent intent = getIntent();
         postId = intent.getStringExtra("postid");
         publisherId = intent.getStringExtra("publisherid");
+        commentAdapter = new CommentAdapter(this, commentList, postId);
+        recyclerView.setAdapter(commentAdapter);
+
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         post.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,11 +130,14 @@ public class CommentActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 commentList.clear();
-                for(DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                commentIds.clear();
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Comment comment = dataSnapshot.getValue(Comment.class);
                     commentList.add(comment);
+                    commentIds.add(dataSnapshot.getKey());
                 }
 
+                commentAdapter.setCommentIds(commentIds);
                 commentAdapter.notifyDataSetChanged();
             }
 

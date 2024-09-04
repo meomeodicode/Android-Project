@@ -1,6 +1,5 @@
 package com.example.instagram.ui.profile;
 
-import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,17 +16,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
-import com.canhub.cropper.CropImage;
 import com.canhub.cropper.CropImageContract;
 import com.canhub.cropper.CropImageContractOptions;
 import com.canhub.cropper.CropImageOptions;
 import com.canhub.cropper.CropImageView;
 import com.example.instagram.Model.UserModel;
-import com.example.instagram.PostActivity;
 import com.example.instagram.R;
 import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -45,8 +40,7 @@ import java.util.HashMap;
 
 public class EditProfileActivity extends AppCompatActivity {
 
-    private static final String TAG = "EditProfileActivity"; // Tag for logging
-
+    private static final String TAG = "EditProfileActivity";
     private ImageView close, imageProfile;
     private Uri imageUri;
     private String myUrl = "";
@@ -83,18 +77,14 @@ public class EditProfileActivity extends AppCompatActivity {
         username = findViewById(R.id.editUsername);
         bio = findViewById(R.id.editBio);
         progressBar = findViewById(R.id.indeterminateBar);
-
-        // Log the firebase user status
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         if (firebaseUser != null) {
             Log.d(TAG, "Current User ID: " + firebaseUser.getUid());
         } else {
             Log.e(TAG, "FirebaseUser is null");
         }
-
         storageRef = FirebaseStorage.getInstance().getReference("uploads");
 
-        // Fetch user details from Firebase
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -105,7 +95,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     Log.d(TAG, "User Data: Username - " + user.getUsername() + ", Bio - " + user.getBio());
                     username.setText(user.getUsername());
                     bio.setText(user.getBio());
-                    Glide.with(getApplicationContext()).load(user.getImageUrl()).into(imageProfile);
+                    Glide.with(getApplicationContext()).load(user.getImageurl()).into(imageProfile);
                 } else {
                     Log.e(TAG, "UserModel is null for User ID: " + firebaseUser.getUid());
                 }
@@ -124,8 +114,10 @@ public class EditProfileActivity extends AppCompatActivity {
         });
 
         save.setOnClickListener(view -> {
+            if (imageUri != null)
+                uploadImage();
             Log.d(TAG, "Save button clicked");
-            updateProfile(username.getText().toString(), bio.getText().toString());
+            updateProfile(username.getText().toString(), bio.getText().toString(), null);
         });
 
         avatarChange.setOnClickListener(view -> {
@@ -146,12 +138,15 @@ public class EditProfileActivity extends AppCompatActivity {
         cropImageLauncher.launch(new CropImageContractOptions(null, options));
     }
 
-    private void updateProfile(String username, String bio) {
-        Log.d(TAG, "Updating profile with Username: " + username + ", Bio: " + bio);
+    private void updateProfile(String username, String bio, String imageurl) {
+        Log.d(TAG, "Updating profile with Username: " + username + ", Bio: " + bio + ", ImageUrl: " + imageurl);
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
         HashMap<String, Object> map = new HashMap<>();
         map.put("username", username);
         map.put("bio", bio);
+        if (imageurl != null) {
+            map.put("imageurl", imageurl);
+        }
         reference.updateChildren(map).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Log.d(TAG, "Profile updated successfully for User ID: " + firebaseUser.getUid());
@@ -161,14 +156,14 @@ public class EditProfileActivity extends AppCompatActivity {
                 Toast.makeText(EditProfileActivity.this, "Failed to update profile", Toast.LENGTH_SHORT).show();
             }
         });
-    }
+        }
 
     private void uploadImage() {
-        if (mImageUri != null) {
-            Log.d(TAG, "Uploading image: " + mImageUri);
+        if (imageUri != null) {
+            Log.d(TAG, "Uploading image: " + imageUri);
             progressBar.setVisibility(View.VISIBLE);
-            final StorageReference fileReference = storageRef.child(System.currentTimeMillis() + "." + getFileExtension(mImageUri));
-            uploadTask = fileReference.putFile(mImageUri);
+            final StorageReference fileReference = storageRef.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
+            uploadTask = fileReference.putFile(imageUri);
             uploadTask.continueWithTask((Continuation<UploadTask.TaskSnapshot, Task<Uri>>) task -> {
                 if (!task.isSuccessful()) {
                     throw task.getException();
@@ -179,18 +174,7 @@ public class EditProfileActivity extends AppCompatActivity {
                     Uri downloadUri = task.getResult();
                     String gottenImageUrl = downloadUri.toString();
                     Log.d(TAG, "Image uploaded successfully: " + gottenImageUrl);
-
-                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
-                    HashMap<String, Object> map1 = new HashMap<>();
-                    map1.put("imageurl", gottenImageUrl);
-                    reference.updateChildren(map1).addOnCompleteListener(task1 -> {
-                        if (task1.isSuccessful()) {
-                            Log.d(TAG, "Image URL updated successfully in Firebase for User ID: " + firebaseUser.getUid());
-                            Toast.makeText(EditProfileActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Log.e(TAG, "Failed to update image URL in Firebase for User ID: " + firebaseUser.getUid());
-                        }
-                    });
+                    updateProfile(username.getText().toString(), bio.getText().toString(), gottenImageUrl);
                 } else {
                     Log.e(TAG, "Image upload failed for User ID: " + firebaseUser.getUid());
                     Toast.makeText(EditProfileActivity.this, "Failed to upload image", Toast.LENGTH_SHORT).show();

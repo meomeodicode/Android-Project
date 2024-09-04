@@ -4,7 +4,7 @@ public class UserModel {
     private String id;
     private String username;
     private String email;
-    private String imageUrl;
+    private String imageurl;
     private String bio;
 
     // Default constructor (required for calls to DataSnapshot.getValue(UserModel.class))
@@ -16,7 +16,7 @@ public class UserModel {
         this.id = id;
         this.username = username;
         this.email = email;
-        this.imageUrl = imageUrl;
+        this.imageurl = imageUrl;
         this.bio = bio;
     }
 
@@ -42,11 +42,11 @@ public class UserModel {
         this.email = email;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getImageurl() {
+        return imageurl;
     }
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImageurl(String imageurl) {
+        this.imageurl = imageurl;
     }
 
     public String getBio() {

@@ -126,7 +126,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
             public void onDataChange(DataSnapshot dataSnapshot) {
                 UserModel user = dataSnapshot.getValue(UserModel.class);
                 if (user != null) {
-                    Glide.with(mContext).load(user.getImageUrl()).into(avatar);
+                    Glide.with(mContext).load(user.getImageurl()).into(avatar);
                     username.setText(user.getUsername());
                 }
             }

@@ -2,7 +2,6 @@ package com.example.instagram;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.NoCopySpan;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -107,8 +106,8 @@ public class CommentActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 UserModel user = snapshot.getValue(UserModel.class);
-                if (user.getImageUrl() != null) {
-                    Glide.with(getApplicationContext()).load(user.getImageUrl()).into(imageProfile);
+                if (user.getImageurl() != null) {
+                    Glide.with(getApplicationContext()).load(user.getImageurl()).into(imageProfile);
                 } else {
                     imageProfile.setImageResource(R.drawable.ic_profile_filled);
                 }

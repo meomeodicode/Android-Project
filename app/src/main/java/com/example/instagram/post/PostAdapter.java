@@ -104,6 +104,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         isLiked(post.getPostId(), holder.like);
         numLikes(holder.likes, post.getPostId());
         getComment(post.getPostId(), holder.comments);
+        isSaved(post.getPostId(), holder.save);
 
         holder.like.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -119,6 +120,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     FirebaseDatabase.getInstance().getReference().child("Likes").child(post.getPostId())
                             .child(firebaseUser.getUid()).removeValue();
                     deleteNotifications(post.getPublisher(), post.getPostId());
+                }
+            }
+        });
+        holder.save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(holder.save.getTag().equals("save")) {
+                    FirebaseDatabase.getInstance().getReference().child("Saves").child(firebaseUser.getUid())
+                            .child(post.getPostId()).setValue(true);
+                }
+                else {
+                    FirebaseDatabase.getInstance().getReference().child("Saves").child(firebaseUser.getUid())
+                            .child(post.getPostId()).removeValue();
                 }
             }
         });
@@ -227,11 +241,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 UserModel user = snapshot.getValue(UserModel.class);
-                if(user.getImageUrl() == null) {
+                assert user != null;
+                if(user.getImageurl() == null || user.getImageurl().isEmpty()) {
                     imageProfile.setImageResource(R.drawable.ic_profile_filled);
                 }
                 else {
-                    Glide.with(mContext).load(user.getImageUrl()).into(imageProfile);
+                    Glide.with(mContext).load(user.getImageurl()).into(imageProfile);
                 }
                 publisher.setText(user.getUsername());
                 username.setText(user.getUsername());
@@ -288,6 +303,29 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             public void onCancelled(DatabaseError databaseError) {
 
             }
+        });
+    }
+
+    private void isSaved(String postId, ImageView imageView) {
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Saves")
+                .child(firebaseUser.getUid());
+
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.child(postId).exists()) {
+                    imageView.setImageResource(R.drawable.ic_favorite_filled);
+                    imageView.setTag("saved");
+                }
+                else {
+                    imageView.setImageResource(R.drawable.ic_favorite);
+                    imageView.setTag("save");
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
         });
     }
 }

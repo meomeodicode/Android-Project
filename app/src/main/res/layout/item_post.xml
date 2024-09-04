@@ -56,7 +56,6 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Post Image Section -->
     <ImageView
         android:id="@+id/image_post"
         android:layout_width="match_parent"
@@ -64,7 +63,6 @@
         android:src="@drawable/ic_instagram_logo"
         android:layout_marginBottom="10dp"/>
 
-    <!-- Interaction Buttons (Like, Comment, Save) -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -90,7 +88,6 @@
             android:layout_alignParentEnd="true"/>
     </RelativeLayout>
 
-    <!-- Post Information (Likes, Publisher, Description, Comments) -->
     <TextView
         android:id="@+id/numLikes"
         android:layout_width="match_parent"

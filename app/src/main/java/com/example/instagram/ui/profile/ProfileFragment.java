@@ -26,6 +26,7 @@ import com.example.instagram.Model.UserModel;
 import com.example.instagram.R;
 import com.example.instagram.post.Post;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -39,7 +40,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class ProfileFragment extends Fragment {
-    private RecyclerView recyclerView;
+    private RecyclerView recyclerView, recyclerView_saves;
     private Button followBtn, editProfile;
     private ImageButton addToPhotoBtn, menuBtn, shareLink;
     private TextView userPost, userFollowing, userFollower, userBio, username;
@@ -50,7 +51,7 @@ public class ProfileFragment extends Fragment {
     private DatabaseReference userRef, followRef;
     private List<Post> postList;
     private List<Post> postList_saves;
-    private Photo postThumbnailAdapter;
+    private Photo postThumbnailAdapter, postThumbnailAdapterSaves;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -66,7 +67,28 @@ public class ProfileFragment extends Fragment {
         initializeViews(view);
         setupFirebase();
         loadUserData();
-        fetchPhoto();
+        TabLayout tabLayout = view.findViewById(R.id.profile_tab_layout);
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (tab.getPosition() == 0) {
+                    fetchPhoto();
+                    recyclerView.setVisibility(View.VISIBLE);
+                    recyclerView_saves.setVisibility(View.GONE);
+                } else if (tab.getPosition() == 1) {
+                    fetchSavedPhotos();
+                    recyclerView.setVisibility(View.GONE);
+                    recyclerView_saves.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {}
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {}
+        });
+
         return view;
     }
 
@@ -74,6 +96,9 @@ public class ProfileFragment extends Fragment {
         recyclerView = view.findViewById(R.id.profile_recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView_saves = view.findViewById(R.id.profile_recycler_view);
+        recyclerView_saves.setHasFixedSize(true);
+        recyclerView_saves.setLayoutManager(new LinearLayoutManager(getContext()));
         postList = new ArrayList<>();
         postThumbnailAdapter = new Photo(getContext(), postList);
         avatar = view.findViewById(R.id.profile_avatar);
@@ -88,9 +113,13 @@ public class ProfileFragment extends Fragment {
         editProfile.setOnClickListener(v -> initEdit());
         LinearLayoutManager mLayoutManager = new GridLayoutManager(getContext(), 3);
         recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView_saves.setLayoutManager(mLayoutManager);
         postList = new ArrayList<>();
+        postList_saves = new ArrayList<>();
+        postThumbnailAdapterSaves = new Photo(getContext(), postList_saves);
         postThumbnailAdapter = new Photo(getContext(), postList);
         recyclerView.setAdapter(postThumbnailAdapter);
+        recyclerView_saves.setAdapter(postThumbnailAdapterSaves);
     }
 
     private void initEdit() {
@@ -224,6 +253,40 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e("fetchPhoto", "Failed to fetch photos: " + error.getMessage());
+            }
+        });
+    }
+
+    private void fetchSavedPhotos() {
+        DatabaseReference savedRef = FirebaseDatabase.getInstance().getReference("Saves")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+        savedRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                postList_saves.clear();
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    String postId = ds.getKey();
+                    DatabaseReference postRef = FirebaseDatabase.getInstance().getReference("Posts").child(postId);
+                    postRef.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot postSnapshot) {
+                            Post post = postSnapshot.getValue(Post.class);
+                            if (post != null) {
+                                postList_saves.add(post);
+                            }
+                            postThumbnailAdapterSaves.notifyDataSetChanged();  // Update the saved posts adapter
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {}
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("fetchSavedPhotos", "Failed to fetch saved posts: " + error.getMessage());
             }
         });
     }

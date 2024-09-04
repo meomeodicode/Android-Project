@@ -115,10 +115,10 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                 UserModel user = snapshot.getValue(UserModel.class);
                 if (user != null) {
                     username.setText(user.getUsername());
-                    if (user.getImageurl() != null) {
-                        Glide.with(mContext).load(user.getImageurl()).into(imageView);
-                    } else {
+                    if (user.getImageurl() == null || user.getImageurl().isEmpty()) {
                         imageView.setImageResource(R.drawable.ic_profile_filled);
+                    } else {
+                        Glide.with(mContext).load(user.getImageurl()).into(imageView);
                     }
                 }
             }

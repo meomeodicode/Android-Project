@@ -108,10 +108,11 @@ public class CommentActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 UserModel user = snapshot.getValue(UserModel.class);
-                if (user.getImageurl() != null) {
-                    Glide.with(getApplicationContext()).load(user.getImageurl()).into(imageProfile);
-                } else {
+                assert user != null;
+                if (user.getImageurl() == null || user.getImageurl().isEmpty()) {
                     imageProfile.setImageResource(R.drawable.ic_profile_filled);
+                } else {
+                    Glide.with(getApplicationContext()).load(user.getImageurl()).into(imageProfile);
                 }
             }
 

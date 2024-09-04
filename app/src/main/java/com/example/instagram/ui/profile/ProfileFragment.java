@@ -42,7 +42,7 @@ import java.util.List;
 public class ProfileFragment extends Fragment {
     private RecyclerView recyclerView, recyclerView_saves;
     private Button followBtn, editProfile;
-    private ImageButton addToPhotoBtn, menuBtn, shareLink;
+    private ImageButton menuBtn, shareLink;
     private TextView userPost, userFollowing, userFollower, userBio, username;
     private ShapeableImageView avatar;
     private FirebaseAuth mAuth;
@@ -67,7 +67,12 @@ public class ProfileFragment extends Fragment {
         initializeViews(view);
         setupFirebase();
         loadUserData();
+        initEdit();
         TabLayout tabLayout = view.findViewById(R.id.profile_tab_layout);
+        TabLayout.Tab firstTab = tabLayout.getTabAt(0);
+        if (firstTab != null) {
+            firstTab.select();
+        }
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -95,12 +100,12 @@ public class ProfileFragment extends Fragment {
     private void initializeViews(View view) {
         recyclerView = view.findViewById(R.id.profile_recycler_view);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView_saves = view.findViewById(R.id.profile_recycler_view);
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+
+        recyclerView_saves = view.findViewById(R.id.profile_recycler_view_saves);
         recyclerView_saves.setHasFixedSize(true);
-        recyclerView_saves.setLayoutManager(new LinearLayoutManager(getContext()));
-        postList = new ArrayList<>();
-        postThumbnailAdapter = new Photo(getContext(), postList);
+        recyclerView_saves.setLayoutManager(new GridLayoutManager(getContext(), 3));
+
         avatar = view.findViewById(R.id.profile_avatar);
         username = view.findViewById(R.id.profile_username);
         userPost = view.findViewById(R.id.profile_posts_count);
@@ -110,15 +115,13 @@ public class ProfileFragment extends Fragment {
         shareLink = view.findViewById(R.id.profile_share_link);
         userBio = view.findViewById(R.id.profile_bio);
         editProfile = view.findViewById(R.id.profile_edit_button);
-        editProfile.setOnClickListener(v -> initEdit());
-        LinearLayoutManager mLayoutManager = new GridLayoutManager(getContext(), 3);
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView_saves.setLayoutManager(mLayoutManager);
+
         postList = new ArrayList<>();
-        postList_saves = new ArrayList<>();
-        postThumbnailAdapterSaves = new Photo(getContext(), postList_saves);
         postThumbnailAdapter = new Photo(getContext(), postList);
         recyclerView.setAdapter(postThumbnailAdapter);
+
+        postList_saves = new ArrayList<>();
+        postThumbnailAdapterSaves = new Photo(getContext(), postList_saves);
         recyclerView_saves.setAdapter(postThumbnailAdapterSaves);
     }
 
@@ -275,7 +278,7 @@ public class ProfileFragment extends Fragment {
                             if (post != null) {
                                 postList_saves.add(post);
                             }
-                            postThumbnailAdapterSaves.notifyDataSetChanged();  // Update the saved posts adapter
+                            postThumbnailAdapterSaves.notifyDataSetChanged();
                         }
 
                         @Override

@@ -255,13 +255,23 @@
             </com.google.android.material.tabs.TabLayout>
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/profile_recycler_view_2"
+                android:id="@+id/profile_recycler_view_saves_2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp" />
 
+            <TextView
+                android:id="@+id/private_saved_posts_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Private"
+                android:textSize="18sp"
+                android:textAlignment="center"
+                android:visibility="gone"
+                android:layout_marginTop="16dp"/>
+
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/profile_recycler_view_saves_2"
+                android:id="@+id/profile_recycler_view_2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp" />

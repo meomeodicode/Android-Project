@@ -25,6 +25,7 @@ import com.example.instagram.Adapter.Photo;
 import com.example.instagram.Model.UserModel;
 import com.example.instagram.R;
 import com.example.instagram.post.Post;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -40,14 +41,14 @@ import java.util.List;
 public class ProfileSearchedFragment extends Fragment {
     private RecyclerView recyclerView, recyclerView_saves;
     private Button followBtn, editProfile;
+    boolean isCurrentUser, flag;
     private ImageButton backBtn;
-    private TextView userPost, userFollowing, userFollower, userBio, username, avatar;
+    private TextView userPost, userFollowing, userFollower, userBio, username, avatar, privateText;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private UserModel displayedUser;
     private DatabaseReference userRef, followRef;
     private List<Post> postList, postList_saves;
-    //private List<Post> postList_saves;
     private Photo postThumbnailAdapter, postThumbnailAdapterSaves;
 
 
@@ -59,6 +60,77 @@ public class ProfileSearchedFragment extends Fragment {
         setupFirebase();
         loadUserData();
         fetchPhoto();
+        TabLayout tabLayout = view.findViewById(R.id.profile_tab_layout_2);
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_all));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_favorite));
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                int tabIconColor = getResources().getColor(android.R.color.black);
+                if (tab.getIcon() != null) {
+                    tab.getIcon().setTint(tabIconColor);
+                }
+                if (tab.getPosition() == 0) {
+                    fetchPhoto();
+                    recyclerView.setVisibility(View.VISIBLE);
+                    recyclerView_saves.setVisibility(View.GONE);
+                    privateText.setVisibility(View.GONE);
+                    flag = false;
+                } else if (tab.getPosition() == 1) {
+                    if (isCurrentUser) {
+                        fetchSavedPhotos();
+                        recyclerView.setVisibility(View.GONE);
+                        recyclerView_saves.setVisibility(View.VISIBLE);
+                        privateText.setVisibility(View.GONE);
+                    } else {
+                        recyclerView.setVisibility(View.GONE);
+                        recyclerView_saves.setVisibility(View.GONE);
+                        privateText.setVisibility(View.VISIBLE);
+                    }
+                    flag = true;
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+                int tabIconColor = getResources().getColor(R.color.grey);
+                if (tab.getIcon() != null) {
+                    tab.getIcon().setTint(tabIconColor);
+                }
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {}
+        });
+
+        TabLayout.Tab firstTab = tabLayout.getTabAt(0);
+        TabLayout.Tab secondTab = tabLayout.getTabAt(1);
+        if(!flag) {
+            if (firstTab != null) {
+                firstTab.select();
+                fetchPhoto();
+                if (firstTab.getIcon() != null) {
+                    int tabIconColor = getResources().getColor(android.R.color.black);
+                    firstTab.getIcon().setTint(tabIconColor);
+                }
+                flag = false;
+            }
+        }
+        else {
+            if(secondTab != null) {
+                secondTab.select();
+                if (secondTab.getIcon() != null) {
+                    int tabIconColor = getResources().getColor(android.R.color.black);
+                    secondTab.getIcon().setTint(tabIconColor);
+                }
+                if (!isCurrentUser) {
+                    recyclerView.setVisibility(View.GONE);
+                    recyclerView_saves.setVisibility(View.GONE);
+                    privateText.setVisibility(View.VISIBLE);
+                }
+                flag = true;
+            }
+        }
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,7 +164,7 @@ public class ProfileSearchedFragment extends Fragment {
         userFollower = view.findViewById(R.id.profile_followers_count_2);
         userBio = view.findViewById(R.id.profile_bio_2);
         userFollowing = view.findViewById(R.id.profile_following_count_2);
-
+        privateText = view.findViewById(R.id.private_saved_posts_text);
         followBtn.setOnClickListener(v -> toggleFollow());
 
         backBtn = view.findViewById(R.id.back_button);
@@ -108,6 +180,8 @@ public class ProfileSearchedFragment extends Fragment {
     private void loadUserData() {
         SharedPreferences prefs = getContext().getSharedPreferences("PREFS", MODE_PRIVATE);
         String profileId = prefs.getString("profileid", "none");
+        String currentUserId = currentUser.getUid();
+         isCurrentUser = currentUserId.equals(profileId);
         if (!profileId.equals("none")) {
             userRef.child(profileId).addValueEventListener(new ValueEventListener() {
                 @Override
@@ -130,6 +204,7 @@ public class ProfileSearchedFragment extends Fragment {
             Toast.makeText(getContext(), "No profile ID found", Toast.LENGTH_SHORT).show();
         }
     }
+
     private void updateUI() {
         username.setText(displayedUser.getUsername() != null ? displayedUser.getUsername() : "No username");
         userBio.setText(displayedUser.getBio() != null ? displayedUser.getBio() : "No bio available");
@@ -243,6 +318,44 @@ public class ProfileSearchedFragment extends Fragment {
             public void onCancelled(DatabaseError databaseError) {
             }
         });
+    }
+    private void fetchSavedPhotos() {
+        if (!isCurrentUser)
+            return;
+        else {
+            DatabaseReference savedRef = FirebaseDatabase.getInstance().getReference("Saves")
+                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+            savedRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    postList_saves.clear();
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        String postId = ds.getKey();
+                        DatabaseReference postRef = FirebaseDatabase.getInstance().getReference("Posts").child(postId);
+                        postRef.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot postSnapshot) {
+                                Post post = postSnapshot.getValue(Post.class);
+                                if (post != null) {
+                                    postList_saves.add(post);
+                                }
+                                postThumbnailAdapterSaves.notifyDataSetChanged();
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("fetchSavedPhotos", "Failed to fetch saved posts: " + error.getMessage());
+                }
+            });
+        }
     }
 
 

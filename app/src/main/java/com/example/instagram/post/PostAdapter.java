@@ -69,7 +69,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             @Override
             public void onClick(View v) {
                 NavController navController = Navigation.findNavController((FragmentActivity) mContext, R.id.nav_host_fragment_activity_main);
-                navController.navigate(R.id.navigation_search_user_profile);
+                navController.navigate(R.id.navigation_profile);
             }
         });
         if(post.getDescription() == null || post.getDescription().equals("")) {

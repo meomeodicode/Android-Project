@@ -23,8 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FollowListActivity extends AppCompatActivity {
-    private String id;
-    private String title;
+    private String id, title, avatar;
     private List<String> idList;
 
     private RecyclerView recyclerView;
@@ -35,21 +34,17 @@ public class FollowListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_follower);
-
         Intent intent = getIntent();
         id = intent.getStringExtra("id");
         title = intent.getStringExtra("title");
-
         if (id == null || title == null) {
-            Log.e("FollowListActivity", "Intent extras are null. id: " + id + ", title: " + title);
-            Toast.makeText(this, "Failed to load data", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
 
         Log.d("FollowListActivity", "Received id: " + id + ", title: " + title);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar_followList);
         setSupportActionBar(toolbar);
         if(title.equals("followers")) {
             getSupportActionBar().setTitle("Followers");
@@ -73,7 +68,6 @@ public class FollowListActivity extends AppCompatActivity {
         recyclerView.setAdapter(userAdapter);
 
         idList = new ArrayList<>();
-
         switch (title.toLowerCase()) {
             case "likes":
                 getLikes();

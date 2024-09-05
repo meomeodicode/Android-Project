@@ -14,6 +14,7 @@ import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.instagram.Model.UserModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -61,15 +62,24 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         UserModel user = Users.get(userHolder.getAdapterPosition());
         userHolder.username.setText(user.getUsername());
         userHolder.email.setText(user.getEmail());
+        if (user.getImageurl() != null && !user.getImageurl().isEmpty()) {
+            Glide.with(userHolder.itemView.getContext())
+                    .load(user.getImageurl())
+                    .placeholder(R.drawable.ic_profile_filled)
+                    .error(R.drawable.ic_profile_filled)
+                    .circleCrop()
+                    .into(userHolder.imageProfile);
+        } else {
+            userHolder.imageProfile.setImageResource(R.drawable.ic_profile_filled);
+        }
         userHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS", MODE_PRIVATE).edit();
                 editor.putString("profileid", user.getId());
                 editor.apply();
-
                 NavController navController = Navigation.findNavController((FragmentActivity) mContext, R.id.nav_host_fragment_activity_main);
-                navController.navigate(R.id.navigation_search_user_profile);
+                navController.navigate(R.id.navigation_searched_user);
             }
         });
     }

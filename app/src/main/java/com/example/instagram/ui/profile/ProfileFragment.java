@@ -281,7 +281,7 @@ public class ProfileFragment extends Fragment {
         username.setText(displayedUser.getUsername() != null ? displayedUser.getUsername() : "No username");
         userBio.setText(displayedUser.getBio() != null ? displayedUser.getBio() : "No bio available");
         Glide.with(getContext()).load(displayedUser.getImageurl()).into(avatar);
-       if (displayedUser != null & displayedUser.getId() != null) {
+        if (displayedUser != null & displayedUser.getId() != null) {
             fetchFollowingCount();
             fetchFollowerCount();
             countPosts();
@@ -289,16 +289,16 @@ public class ProfileFragment extends Fragment {
     }
 
     private void getFollowersList() {
-            Intent intent = new Intent(getContext(), FollowListActivity.class);
-            intent.putExtra("id", profileid);
-            intent.putExtra("title", "followers");
-            startActivity(intent);
+        Intent intent = new Intent(getContext(), FollowListActivity.class);
+        intent.putExtra("id", profileid);
+        intent.putExtra("title", "followers");
+        startActivity(intent);
     }
     private void getFollowingList() {
-            Intent intent = new Intent(getContext(), FollowListActivity.class);
-            intent.putExtra("id", profileid);
-            intent.putExtra("title", "following");
-            startActivity(intent);
+        Intent intent = new Intent(getContext(), FollowListActivity.class);
+        intent.putExtra("id", profileid);
+        intent.putExtra("title", "following");
+        startActivity(intent);
     }
     private void fetchFollowerCount() {
         followRef.child(displayedUser.getId()).child("followers").addListenerForSingleValueEvent(new ValueEventListener() {

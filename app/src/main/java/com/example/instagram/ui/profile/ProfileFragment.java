@@ -48,7 +48,7 @@ import java.util.List;
 
 public class ProfileFragment extends Fragment {
     private RecyclerView recyclerView, recyclerView_saves;
-    private Button followBtn, editProfile;
+    private Button editProfile;
     private String profileid;
     private ImageButton menuBtn, shareLink;
     private TextView userPost, userFollowing, userFollower, userBio, username;
@@ -179,10 +179,6 @@ public class ProfileFragment extends Fragment {
         userBio = view.findViewById(R.id.profile_bio);
         editProfile = view.findViewById(R.id.profile_edit_button);
         editProfile.setOnClickListener(v -> initEdit());
-        LinearLayoutManager mLayoutManager = new GridLayoutManager(getContext(), 3);
-        recyclerView.setLayoutManager(mLayoutManager);
-        LinearLayoutManager mLayoutManagerSave = new GridLayoutManager(getContext(), 3);
-        recyclerView_saves.setLayoutManager(mLayoutManagerSave);
         postList = new ArrayList<>();
         postList_saves = new ArrayList<>();
         postThumbnailAdapterSaves = new Photo(getContext(), postList_saves);
@@ -257,7 +253,8 @@ public class ProfileFragment extends Fragment {
                         displayedUser = dataSnapshot.getValue(UserModel.class);
                         if (displayedUser != null) {
                             updateUI();
-                        } else {
+                        }
+                        else {
                             Log.e("loadUserData", "UserModel is null for profileId: " + profileId);
                         }
                     } else {

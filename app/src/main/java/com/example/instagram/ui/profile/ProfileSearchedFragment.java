@@ -21,10 +21,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.instagram.Adapter.Photo;
 import com.example.instagram.Model.UserModel;
 import com.example.instagram.R;
 import com.example.instagram.post.Post;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -43,7 +45,8 @@ public class ProfileSearchedFragment extends Fragment {
     private Button followBtn, editProfile;
     boolean isCurrentUser, flag;
     private ImageButton backBtn;
-    private TextView userPost, userFollowing, userFollower, userBio, username, avatar, privateText;
+    private TextView userPost, userFollowing, userFollower, userBio, username, privateText;
+    private ShapeableImageView avatar;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private UserModel displayedUser;
@@ -165,6 +168,7 @@ public class ProfileSearchedFragment extends Fragment {
         userBio = view.findViewById(R.id.profile_bio_2);
         userFollowing = view.findViewById(R.id.profile_following_count_2);
         privateText = view.findViewById(R.id.private_saved_posts_text);
+        avatar = view.findViewById(R.id.profile_avatar_2);
         followBtn.setOnClickListener(v -> toggleFollow());
 
         backBtn = view.findViewById(R.id.back_button);
@@ -178,11 +182,20 @@ public class ProfileSearchedFragment extends Fragment {
     }
 
     private void loadUserData() {
-        SharedPreferences prefs = getContext().getSharedPreferences("PREFS", MODE_PRIVATE);
-        String profileId = prefs.getString("profileid", "none");
-        String currentUserId = currentUser.getUid();
-         isCurrentUser = currentUserId.equals(profileId);
-        if (!profileId.equals("none")) {
+        Bundle bundle = getArguments();
+        String profileId = null;
+        if (bundle != null) {
+            profileId = bundle.getString("profileId");
+        }
+
+        if (profileId == null || profileId.isEmpty()) {
+            SharedPreferences prefs = getContext().getSharedPreferences("PREFS", MODE_PRIVATE);
+            profileId = prefs.getString("profileid", "none");
+        }
+
+        if (profileId != null && !profileId.equals("none")) {
+            String currentUserId = currentUser.getUid();
+            isCurrentUser = currentUserId.equals(profileId);
             userRef.child(profileId).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -208,6 +221,7 @@ public class ProfileSearchedFragment extends Fragment {
     private void updateUI() {
         username.setText(displayedUser.getUsername() != null ? displayedUser.getUsername() : "No username");
         userBio.setText(displayedUser.getBio() != null ? displayedUser.getBio() : "No bio available");
+        Glide.with(getContext()).load(displayedUser.getImageurl()).into(avatar);
         if (displayedUser != null & displayedUser.getId()!=null) {
             fetchFollowingCount();
             fetchFollowerCount();
@@ -342,14 +356,12 @@ public class ProfileSearchedFragment extends Fragment {
                                 }
                                 postThumbnailAdapterSaves.notifyDataSetChanged();
                             }
-
                             @Override
                             public void onCancelled(@NonNull DatabaseError error) {
                             }
                         });
                     }
                 }
-
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
                     Log.e("fetchSavedPhotos", "Failed to fetch saved posts: " + error.getMessage());

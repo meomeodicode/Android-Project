@@ -25,7 +25,6 @@ import java.util.List;
 public class FollowListActivity extends AppCompatActivity {
     private String id, title, avatar;
     private List<String> idList;
-
     private RecyclerView recyclerView;
     private UsersAdapter userAdapter;
     private List<UserModel> userList;
@@ -60,13 +59,12 @@ public class FollowListActivity extends AppCompatActivity {
             }
         });
 
-        recyclerView = findViewById(R.id.recycler_view);
+        recyclerView = findViewById(R.id.recycler_view_follow);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         userList = new ArrayList<>();
         userAdapter = new UsersAdapter(this, userList, false);
         recyclerView.setAdapter(userAdapter);
-
         idList = new ArrayList<>();
         switch (title.toLowerCase()) {
             case "likes":
@@ -168,7 +166,6 @@ public class FollowListActivity extends AppCompatActivity {
 
     private void showUsers() {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
-
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {

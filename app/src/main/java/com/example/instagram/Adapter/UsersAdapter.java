@@ -88,16 +88,3 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         return Users.size();
     }
 }
-
-    /*
-    private void addNotification(String userid) {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications").child(userid);
-
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("userid", firebaseUser.getUid());
-        hashMap.put("text", "started following you");
-        hashMap.put("postid", "");
-        hashMap.put("ispost", false);
-
-        reference.push().setValue(hashMap);
-    }*/

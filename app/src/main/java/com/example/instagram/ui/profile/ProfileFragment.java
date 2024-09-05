@@ -7,10 +7,12 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,9 +24,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.instagram.Adapter.Photo;
+import com.example.instagram.FollowListActivity;
+import com.example.instagram.ForgotPasswordActivity;
+import com.example.instagram.LoginActivity;
+import com.example.instagram.MainActivity;
 import com.example.instagram.Model.UserModel;
 import com.example.instagram.R;
 import com.example.instagram.post.Post;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -42,7 +49,8 @@ import java.util.List;
 public class ProfileFragment extends Fragment {
     private RecyclerView recyclerView, recyclerView_saves;
     private Button followBtn, editProfile;
-    private ImageButton addToPhotoBtn, menuBtn, shareLink;
+    private String profileid;
+    private ImageButton menuBtn, shareLink;
     private TextView userPost, userFollowing, userFollower, userBio, username;
     private ShapeableImageView avatar;
     private FirebaseAuth mAuth;
@@ -68,6 +76,7 @@ public class ProfileFragment extends Fragment {
         initializeViews(view);
         setupFirebase();
         loadUserData();
+        initEdit();
         TabLayout tabLayout = view.findViewById(R.id.profile_tab_layout);
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_all));
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_favorite));
@@ -102,7 +111,25 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onTabReselected(TabLayout.Tab tab) {}
         });
+        userFollowing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFollowingList();
+            }
+        });
+        userFollower.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFollowersList();
+            }
+        });
+        menuBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openBottomSheetMenu();
+            }
 
+        });
         TabLayout.Tab firstTab = tabLayout.getTabAt(0);
         TabLayout.Tab secondTab = tabLayout.getTabAt(1);
         if(!flag) {
@@ -134,10 +161,14 @@ public class ProfileFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView_saves = view.findViewById(R.id.profile_recycler_view_saves);
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+
+        recyclerView_saves = view.findViewById(R.id.profile_recycler_view_saves);
         recyclerView_saves.setHasFixedSize(true);
-        recyclerView_saves.setLayoutManager(new LinearLayoutManager(getContext()));
-        postList = new ArrayList<>();
-        postThumbnailAdapter = new Photo(getContext(), postList);
+        recyclerView_saves.setLayoutManager(new GridLayoutManager(getContext(), 3));
+
+        SharedPreferences prefs = getContext().getSharedPreferences("PREFS", MODE_PRIVATE);
+        profileid = prefs.getString("profileid", "none");
         avatar = view.findViewById(R.id.profile_avatar);
         username = view.findViewById(R.id.profile_username);
         userPost = view.findViewById(R.id.profile_posts_count);
@@ -183,6 +214,35 @@ public class ProfileFragment extends Fragment {
         editor.apply();
     }
 
+    private void openBottomSheetMenu() {
+        View bottomSheetView = LayoutInflater.from(getContext()).inflate(R.layout.profile_menu, null);
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
+        bottomSheetDialog.setContentView(bottomSheetView);
+        Button changePass = bottomSheetView.findViewById(R.id.btn_change_password);
+        Button logout = bottomSheetView.findViewById(R.id.btn_logout);
+        changePass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), ForgotPasswordActivity.class);
+                startActivity(intent);
+                getActivity().finish();
+                bottomSheetDialog.dismiss();
+            }
+        });
+
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(getContext(), LoginActivity.class);
+                startActivity(intent);
+                getActivity().finish();
+                bottomSheetDialog.dismiss();
+            }
+        });
+
+        bottomSheetDialog.show();
+    }
 
     private void loadUserData() {
         SharedPreferences prefs = getContext().getSharedPreferences("PREFS", MODE_PRIVATE);
@@ -209,7 +269,6 @@ public class ProfileFragment extends Fragment {
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                     Log.e("loadUserData", "Failed to load user data: " + databaseError.getMessage());
-                    Toast.makeText(getContext(), "Failed to load user data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
@@ -229,6 +288,29 @@ public class ProfileFragment extends Fragment {
         }
     }
 
+    private void getFollowersList()
+    {
+        userFollower.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), FollowListActivity.class);
+                intent.putExtra("id", profileid);
+                intent.putExtra("title", "followers");
+                startActivity(intent);
+            }
+        });
+    }
+    private void getFollowingList() {
+        userFollowing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), FollowListActivity.class);
+                intent.putExtra("id", profileid);
+                intent.putExtra("title", "following");
+                startActivity(intent);
+            }
+        });
+    }
     private void fetchFollowerCount() {
         followRef.child(displayedUser.getId()).child("followers").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -313,7 +395,7 @@ public class ProfileFragment extends Fragment {
                             if (post != null) {
                                 postList_saves.add(post);
                             }
-                            postThumbnailAdapterSaves.notifyDataSetChanged();  // Update the saved posts adapter
+                            postThumbnailAdapterSaves.notifyDataSetChanged();
                         }
 
                         @Override

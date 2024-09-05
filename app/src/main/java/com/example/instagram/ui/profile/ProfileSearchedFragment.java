@@ -35,16 +35,16 @@ import java.util.Collections;
 import java.util.List;
 
 public class ProfileSearchedFragment extends Fragment {
-    private RecyclerView recyclerView;
+    private RecyclerView recyclerView, recyclerView_saves;
     private Button followBtn, editProfile;
     private TextView userPost, userFollowing, userFollower, userBio, username, avatar;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private UserModel displayedUser;
     private DatabaseReference userRef, followRef;
-    private List<Post> postList;
+    private List<Post> postList, postList_saves;
     //private List<Post> postList_saves;
-    private Photo postThumbnailAdapter;
+    private Photo postThumbnailAdapter, postThumbnailAdapterSaves;
 
 
     @Override
@@ -59,23 +59,30 @@ public class ProfileSearchedFragment extends Fragment {
     }
 
     private void initializeViews(View view) {
-        recyclerView = view.findViewById(R.id.recycler_view);
+        recyclerView = view.findViewById(R.id.profile_recycler_view_2);
         recyclerView.setHasFixedSize(true);
-        LinearLayoutManager mLayoutManager = new GridLayoutManager(getContext(), 3);
-        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
+
+        recyclerView_saves = view.findViewById(R.id.profile_recycler_view_saves_2);
+        recyclerView_saves.setHasFixedSize(true);
+        recyclerView_saves.setLayoutManager(new GridLayoutManager(getContext(), 3));
+
         postList = new ArrayList<>();
         postThumbnailAdapter  = new Photo(getContext(), postList);
-        followBtn = view.findViewById(R.id.btn_follow_profile);
-        username = view.findViewById(R.id.username);
-        userPost = view.findViewById(R.id.user_post);
-        userFollower = view.findViewById(R.id.user_follower);
-        userBio = view.findViewById(R.id.user_bio);
-        userFollowing = view.findViewById(R.id.user_following);
-        followBtn.setOnClickListener(v -> toggleFollow());
-        recyclerView.setLayoutManager(mLayoutManager);
-        postList = new ArrayList<>();
-        postThumbnailAdapter = new Photo(getContext(), postList);
         recyclerView.setAdapter(postThumbnailAdapter);
+
+        postList_saves = new ArrayList<>();
+        postThumbnailAdapterSaves = new Photo(getContext(), postList_saves);
+        recyclerView_saves.setAdapter(postThumbnailAdapterSaves);
+
+        followBtn = view.findViewById(R.id.profile_edit_button_2);
+        username = view.findViewById(R.id.profile_username_2);
+        userPost = view.findViewById(R.id.profile_posts_count_2);
+        userFollower = view.findViewById(R.id.profile_followers_count_2);
+        userBio = view.findViewById(R.id.profile_bio_2);
+        userFollowing = view.findViewById(R.id.profile_following_count_2);
+
+        followBtn.setOnClickListener(v -> toggleFollow());
     }
 
     private void setupFirebase() {
@@ -117,6 +124,7 @@ public class ProfileSearchedFragment extends Fragment {
             fetchFollowingCount();
             fetchFollowerCount();
             checkFollowStatus();
+            countPosts();
         }
     }
 
@@ -199,6 +207,27 @@ public class ProfileSearchedFragment extends Fragment {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e("fetchPhoto", "Failed to fetch photos: " + error.getMessage());
+            }
+        });
+    }
+    private void countPosts() {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts");
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                SharedPreferences postPrefs = getContext().getSharedPreferences("PREFS", MODE_PRIVATE);
+                String profileId = postPrefs.getString("profileid", "none");
+                int count = 0;
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Post post = snapshot.getValue(Post.class);
+                    if (post.getPublisher().equals(profileId)) {
+                        count++;
+                    }
+                }
+                userPost.setText(String.valueOf(count));
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
             }
         });
     }

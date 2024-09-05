@@ -6,12 +6,16 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.bumptech.glide.Glide;
 import com.example.instagram.Model.UserModel;
@@ -29,15 +33,24 @@ public class SinglePostDetailFragment extends Fragment {
     private  FirebaseUser firebaseUser;
     private String postId;
     public ImageView imageProfile, postImageResource, like, comment, save;
-    public TextView username, likes, publisher, description, comments, timestamp;
+    public TextView username, likes, publisher, description, comments, timestamp, title, usernameTitle;
     private Context mContext;
-
+    private ImageButton backBtn;
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        View view = inflater.inflate(R.layout.item_post, container, false);
+        View view = inflater.inflate(R.layout.item_post_tmp, container, false);
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        backBtn = view.findViewById(R.id.back_button);
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavController navController = Navigation.findNavController(view);
+                navController.navigateUp();
+            }
+        });
 
         mContext = getContext();
         postImageResource= view.findViewById(R.id.image_post);
@@ -51,6 +64,8 @@ public class SinglePostDetailFragment extends Fragment {
         comments = view.findViewById(R.id.comments);
         timestamp = view.findViewById(R.id.timestamp);
         likes = view.findViewById(R.id.numLikes);
+        title = view.findViewById(R.id.toolbar_title);
+        usernameTitle =view.findViewById(R.id.toolbar_username_title);
         if (getArguments() != null) {
             postId = getArguments().getString("postid");
         }
@@ -151,6 +166,7 @@ public class SinglePostDetailFragment extends Fragment {
                     }
                     username.setText(user.getUsername());
                     postUsernameTop.setText(user.getUsername());
+                    usernameTitle.setText(user.getUsername());
                 }
             }
 

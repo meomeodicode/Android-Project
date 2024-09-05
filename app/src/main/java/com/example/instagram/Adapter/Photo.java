@@ -62,7 +62,7 @@ public class Photo extends RecyclerView.Adapter<Photo.ImageViewHolder> {
         SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS", MODE_PRIVATE).edit();
         NavController navController = Navigation.findNavController((FragmentActivity) mContext, R.id.nav_host_fragment_activity_main);
         NavOptions navOptions = new NavOptions.Builder()
-                .setPopUpTo(R.id.navigation_home, false)
+                .setPopUpTo(R.id.navigation_profile, false)
                 .setLaunchSingleTop(true)
                 .build();
 

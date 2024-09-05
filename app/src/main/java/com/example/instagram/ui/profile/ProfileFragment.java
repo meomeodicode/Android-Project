@@ -52,6 +52,7 @@ public class ProfileFragment extends Fragment {
     private List<Post> postList;
     private List<Post> postList_saves;
     private Photo postThumbnailAdapter, postThumbnailAdapterSaves;
+    private boolean flag;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,27 +69,63 @@ public class ProfileFragment extends Fragment {
         setupFirebase();
         loadUserData();
         TabLayout tabLayout = view.findViewById(R.id.profile_tab_layout);
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_all));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_favorite));
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+                int tabIconColor = getResources().getColor(android.R.color.black);
+                if (tab.getIcon() != null) {
+                    tab.getIcon().setTint(tabIconColor);
+                }
                 if (tab.getPosition() == 0) {
                     fetchPhoto();
                     recyclerView.setVisibility(View.VISIBLE);
                     recyclerView_saves.setVisibility(View.GONE);
+                    flag = false;
                 } else if (tab.getPosition() == 1) {
                     fetchSavedPhotos();
                     recyclerView.setVisibility(View.GONE);
                     recyclerView_saves.setVisibility(View.VISIBLE);
+                    flag = true;
                 }
             }
 
             @Override
-            public void onTabUnselected(TabLayout.Tab tab) {}
+            public void onTabUnselected(TabLayout.Tab tab) {
+                int tabIconColor = getResources().getColor(R.color.grey);
+                if (tab.getIcon() != null) {
+                    tab.getIcon().setTint(tabIconColor);
+                }
+            }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {}
         });
 
+        TabLayout.Tab firstTab = tabLayout.getTabAt(0);
+        TabLayout.Tab secondTab = tabLayout.getTabAt(1);
+        if(!flag) {
+            if (firstTab != null) {
+                firstTab.select();
+                fetchPhoto();
+                if (firstTab.getIcon() != null) {
+                    int tabIconColor = getResources().getColor(android.R.color.black);
+                    firstTab.getIcon().setTint(tabIconColor);
+                }
+                flag = false;
+            }
+        }
+        else {
+            if(secondTab != null) {
+                secondTab.select();
+                if (secondTab.getIcon() != null) {
+                    int tabIconColor = getResources().getColor(android.R.color.black);
+                    secondTab.getIcon().setTint(tabIconColor);
+                }
+                flag = true;
+            }
+        }
         return view;
     }
 
@@ -96,7 +133,7 @@ public class ProfileFragment extends Fragment {
         recyclerView = view.findViewById(R.id.profile_recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView_saves = view.findViewById(R.id.profile_recycler_view);
+        recyclerView_saves = view.findViewById(R.id.profile_recycler_view_saves);
         recyclerView_saves.setHasFixedSize(true);
         recyclerView_saves.setLayoutManager(new LinearLayoutManager(getContext()));
         postList = new ArrayList<>();
@@ -113,7 +150,8 @@ public class ProfileFragment extends Fragment {
         editProfile.setOnClickListener(v -> initEdit());
         LinearLayoutManager mLayoutManager = new GridLayoutManager(getContext(), 3);
         recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView_saves.setLayoutManager(mLayoutManager);
+        LinearLayoutManager mLayoutManagerSave = new GridLayoutManager(getContext(), 3);
+        recyclerView_saves.setLayoutManager(mLayoutManagerSave);
         postList = new ArrayList<>();
         postList_saves = new ArrayList<>();
         postThumbnailAdapterSaves = new Photo(getContext(), postList_saves);

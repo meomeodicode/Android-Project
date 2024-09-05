@@ -64,15 +64,12 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         userHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                    SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS", MODE_PRIVATE).edit();
-                    editor.putString("profileid", user.getId());
-                    editor.apply();
-                    NavController navController = Navigation.findNavController((FragmentActivity) mContext, R.id.nav_host_fragment_activity_main);
-                    NavOptions navOptions = new NavOptions.Builder()
-                        .setPopUpTo(R.id.navigation_home, false)
-                        .setLaunchSingleTop(true)
-                        .build();
-                    navController.navigate(R.id.navigation_search_user_profile, null, navOptions);
+                SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS", MODE_PRIVATE).edit();
+                editor.putString("profileid", user.getId());
+                editor.apply();
+
+                NavController navController = Navigation.findNavController((FragmentActivity) mContext, R.id.nav_host_fragment_activity_main);
+                navController.navigate(R.id.navigation_search_user_profile);
             }
         });
     }

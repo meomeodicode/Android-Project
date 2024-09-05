@@ -288,28 +288,17 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-    private void getFollowersList()
-    {
-        userFollower.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getContext(), FollowListActivity.class);
-                intent.putExtra("id", profileid);
-                intent.putExtra("title", "followers");
-                startActivity(intent);
-            }
-        });
+    private void getFollowersList() {
+            Intent intent = new Intent(getContext(), FollowListActivity.class);
+            intent.putExtra("id", profileid);
+            intent.putExtra("title", "followers");
+            startActivity(intent);
     }
     private void getFollowingList() {
-        userFollowing.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getContext(), FollowListActivity.class);
-                intent.putExtra("id", profileid);
-                intent.putExtra("title", "following");
-                startActivity(intent);
-            }
-        });
+            Intent intent = new Intent(getContext(), FollowListActivity.class);
+            intent.putExtra("id", profileid);
+            intent.putExtra("title", "following");
+            startActivity(intent);
     }
     private void fetchFollowerCount() {
         followRef.child(displayedUser.getId()).child("followers").addListenerForSingleValueEvent(new ValueEventListener() {

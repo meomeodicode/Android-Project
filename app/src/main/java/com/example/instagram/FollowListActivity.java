@@ -51,7 +51,12 @@ public class FollowListActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(title);
+        if(title.equals("followers")) {
+            getSupportActionBar().setTitle("Followers");
+        }
+        else {
+            getSupportActionBar().setTitle("Following");
+        }
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override

@@ -9,11 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,6 +40,7 @@ import java.util.List;
 public class ProfileSearchedFragment extends Fragment {
     private RecyclerView recyclerView, recyclerView_saves;
     private Button followBtn, editProfile;
+    private ImageButton backBtn;
     private TextView userPost, userFollowing, userFollower, userBio, username, avatar;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
@@ -55,6 +59,13 @@ public class ProfileSearchedFragment extends Fragment {
         setupFirebase();
         loadUserData();
         fetchPhoto();
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavController navController = Navigation.findNavController(view);
+                navController.navigateUp();
+            }
+        });
         return view;
     }
 
@@ -83,6 +94,8 @@ public class ProfileSearchedFragment extends Fragment {
         userFollowing = view.findViewById(R.id.profile_following_count_2);
 
         followBtn.setOnClickListener(v -> toggleFollow());
+
+        backBtn = view.findViewById(R.id.back_button);
     }
 
     private void setupFirebase() {

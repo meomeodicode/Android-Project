@@ -32,10 +32,6 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        rtnToLogin = binding.button2;
-
-        initListener();
-
 //        Bundle intent = getIntent().getExtras();
 //        if(intent != null) {
 //            String publisher = intent.getString("publisherid");
@@ -65,21 +61,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    private void initListener() {
-        rtnToLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                navigateToLogin();
-            }
-        });
-    }
-
-    private void navigateToLogin() {
-        Intent intent = new Intent(this, LoginWithAccountActivity.class);
-        startActivity(intent);
-        finish();
     }
 }
 

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@drawable/profile_edit_profile_button">
+
+    <ImageView
+        android:id="@+id/app_logo"
+        android:layout_width="115dp"
+        android:layout_height="109dp"
+        android:layout_gravity="center"
+        android:layout_marginBottom="15dp"
+        android:contentDescription="App Logo"
+        android:src="@drawable/app_icon" />
+
+    <TextView
+        android:id="@+id/user_email_in_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="user@example.com"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:layout_gravity="center"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:id="@+id/btn_change_password"
+        android:layout_width="190dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Change Password"
+        android:textColor="@color/black"
+        android:backgroundTint="@color/dim_white"
+        android:layout_marginBottom="8dp" />
+
+    <Button
+        android:id="@+id/btn_logout"
+        android:layout_width="190dp"
+        android:layout_height="wrap_content"
+        android:text="Log Out"
+        android:layout_gravity="center"
+        android:textColor="@color/black"
+        android:backgroundTint="@color/dim_white"/>
+</LinearLayout>

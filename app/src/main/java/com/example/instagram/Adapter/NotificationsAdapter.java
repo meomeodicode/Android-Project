@@ -82,7 +82,7 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
         } else {
             editor.putString("profileid", notification.getUserID());
             editor.apply();
-            navController.navigate(R.id.navigation_profile, null, navOptions);
+            navController.navigate(R.id.navigation_searched_user, null, navOptions);
         }
     }
     @Override
@@ -96,7 +96,6 @@ public class NotificationsAdapter extends RecyclerView.Adapter<NotificationsAdap
             Log.e("getPostImage", "Post ID is null or empty!");
             return;
         }
-
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference()
                 .child("Posts").child(postID);
         reference.addListenerForSingleValueEvent(new ValueEventListener() {

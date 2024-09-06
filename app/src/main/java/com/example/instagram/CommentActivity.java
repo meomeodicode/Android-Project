@@ -19,6 +19,8 @@ import com.bumptech.glide.Glide;
 import com.example.instagram.Adapter.CommentAdapter;
 import com.example.instagram.Model.Comment;
 import com.example.instagram.Model.UserModel;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -85,9 +87,18 @@ public class CommentActivity extends AppCompatActivity {
                 }
             }
         });
-
         getImage();
         readComments();
+    }
+
+    private void addNotification(String userid, String postID){
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications").child(userid);
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("userID", firebaseUser.getUid());
+        hashMap.put("description", "commented on your post");
+        hashMap.put("postId", postID);
+        hashMap.put("isPost", true);
+        reference.push().setValue(hashMap);
     }
     private void addComment() {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Comments").child(postId);
@@ -96,9 +107,18 @@ public class CommentActivity extends AppCompatActivity {
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("comment", addComment.getText().toString());
         hashMap.put("publisher", firebaseUser.getUid());
-
-        reference.push().setValue(hashMap);
-        addComment.setText("");
+        reference.child(commentId).setValue(hashMap)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            addNotification(publisherId, postId);
+                            addComment.setText("");
+                        } else {
+                            Toast.makeText(CommentActivity.this, "Failed to add comment", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
     private void getImage() {
@@ -125,12 +145,10 @@ public class CommentActivity extends AppCompatActivity {
 
     private void readComments() {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Comments").child(postId);
-
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 commentList.clear();
-                commentIds.clear();
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Comment comment = dataSnapshot.getValue(Comment.class);
                     commentList.add(comment);

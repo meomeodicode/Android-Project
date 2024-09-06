@@ -91,8 +91,6 @@ public class EditProfileActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 UserModel user = dataSnapshot.getValue(UserModel.class);
                 if (user != null) {
-                    Log.d(TAG, "Retrieved User ID: " + firebaseUser.getUid());
-                    Log.d(TAG, "User Data: Username - " + user.getUsername() + ", Bio - " + user.getBio());
                     username.setText(user.getUsername());
                     bio.setText(user.getBio());
                     Glide.with(getApplicationContext()).load(user.getImageurl()).into(imageProfile);
@@ -103,7 +101,6 @@ public class EditProfileActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, "Failed to load user data: " + databaseError.getMessage());
                 Toast.makeText(EditProfileActivity.this, "Failed to load user data", Toast.LENGTH_SHORT).show();
             }
         });
@@ -139,7 +136,6 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     private void updateProfile(String username, String bio, String imageurl) {
-        Log.d(TAG, "Updating profile with Username: " + username + ", Bio: " + bio + ", ImageUrl: " + imageurl);
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());
         HashMap<String, Object> map = new HashMap<>();
         map.put("username", username);

@@ -28,7 +28,6 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText editEmail, editPassword, editName;
     private Button signUpButton;
     private DatabaseReference dbReference;
-
     private ImageButton backButton;
 
     @Override

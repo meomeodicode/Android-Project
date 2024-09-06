@@ -1,6 +1,7 @@
 package com.example.instagram.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.instagram.MainActivity;
 import com.example.instagram.Model.UserModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -78,8 +80,10 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
                 SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS", MODE_PRIVATE).edit();
                 editor.putString("profileid", user.getId());
                 editor.apply();
-                NavController navController = Navigation.findNavController((FragmentActivity) mContext, R.id.nav_host_fragment_activity_main);
-                navController.navigate(R.id.navigation_searched_user);
+                Intent intent = new Intent(mContext, MainActivity.class);
+                intent.putExtra("navigate_to_profile", true);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                mContext.startActivity(intent);
             }
         });
     }

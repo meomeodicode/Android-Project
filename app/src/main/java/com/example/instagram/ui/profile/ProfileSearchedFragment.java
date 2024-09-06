@@ -38,6 +38,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 public class ProfileSearchedFragment extends Fragment {
@@ -210,7 +211,6 @@ public class ProfileSearchedFragment extends Fragment {
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Toast.makeText(getContext(), "Failed to load user data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
@@ -269,7 +269,6 @@ public class ProfileSearchedFragment extends Fragment {
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Toast.makeText(getContext(), "Failed to check follow status", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -370,7 +369,6 @@ public class ProfileSearchedFragment extends Fragment {
         }
     }
 
-
     private void toggleFollow() {
         boolean isFollowing = followBtn.getText().toString().equals("Following");
         DatabaseReference userFollowingRef = followRef.child(currentUser.getUid()).child("following").child(displayedUser.getId());
@@ -381,7 +379,19 @@ public class ProfileSearchedFragment extends Fragment {
         } else {
             userFollowingRef.setValue(true);
             userFollowersRef.setValue(true);
+            addNotification();
         }
         loadUserData();
     }
+
+    private void addNotification() {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications").child(currentUser.getUid());
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("userID", currentUser.getUid());
+        hashMap.put("description", "started following you");
+        hashMap.put("postId", "");
+        hashMap.put("isPost", false);
+        reference.push().setValue(hashMap);
+    }
+
 }

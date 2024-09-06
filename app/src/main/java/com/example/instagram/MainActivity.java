@@ -31,25 +31,12 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-//        Bundle intent = getIntent().getExtras();
-//        if(intent != null) {
-//            String publisher = intent.getString("publisherid");
-//
-//            SharedPreferences.Editor editor = getSharedPreferences("PREFS", MODE_PRIVATE).edit();
-//            editor.putString("profileid", publisher);
-//            editor.apply();
-//
-//            getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_activity_main, new ProfileFragment()).commit();
-//        }
-//        else {
-//            getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment_activity_main, new HomeFragment()).commit();
-//        }
-
         BottomNavigationView navView = binding.navView;
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupWithNavController(navView, navController);
-
+        if (getIntent().getBooleanExtra("navigate_to_profile", false)) {
+            navController.navigate(R.id.navigation_searched_user);
+        }
         navView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {

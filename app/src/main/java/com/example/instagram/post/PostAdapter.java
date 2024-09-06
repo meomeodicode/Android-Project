@@ -208,7 +208,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     }
     private void publisherInfo(ImageView imageProfile, TextView username, TextView publisher, String UID) {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(UID);
-
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

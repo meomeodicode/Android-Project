@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -44,7 +45,8 @@ import java.util.List;
 public class ProfileSearchedFragment extends Fragment {
     private RecyclerView recyclerView, recyclerView_saves;
     private Button followBtn, editProfile;
-    boolean isCurrentUser, flag;
+    private boolean isCurrentUser, flag;
+    private String profileId;
     private ImageButton backBtn;
     private TextView userPost, userFollowing, userFollower, userBio, username, privateText;
     private ShapeableImageView avatar;
@@ -55,7 +57,12 @@ public class ProfileSearchedFragment extends Fragment {
     private List<Post> postList, postList_saves;
     private Photo postThumbnailAdapter, postThumbnailAdapterSaves;
 
-
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            profileId = getArguments().getString("profileId", "none");
+        }
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -275,19 +282,14 @@ public class ProfileSearchedFragment extends Fragment {
 
     private void fetchPhoto() {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts");
-        Log.d("fetchPhoto", "Starting to fetch photos");
-
+        Log.d("fetchPhoto", "Starting to fetch photos for profileId: " + profileId);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 postList.clear();
                 Log.d("fetchPhoto", "Cleared postList");
-                SharedPreferences prefs = getContext().getSharedPreferences("PREFS", MODE_PRIVATE);
-                String profileId = prefs.getString("profileid", "none");
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Post post = snapshot.getValue(Post.class);
-
-                    // Log the post data being processed
                     if (post != null) {
                         Log.d("fetchPhoto", "Processing post: " + post.getPostImage() + ", Publisher: " + post.getPublisher());
                         if (post.getPublisher().equals(profileId)) {
@@ -305,12 +307,14 @@ public class ProfileSearchedFragment extends Fragment {
                 postThumbnailAdapter.notifyDataSetChanged();
                 Log.d("fetchPhoto", "Adapter notified of data change");
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Log.e("fetchPhoto", "Failed to fetch photos: " + error.getMessage());
             }
         });
     }
+
     private void countPosts() {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts");
         reference.addValueEventListener(new ValueEventListener() {

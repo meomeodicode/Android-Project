@@ -3,6 +3,8 @@ package com.example.instagram.Adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,13 +79,20 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         userHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS", MODE_PRIVATE).edit();
-                editor.putString("profileid", user.getId());
-                editor.apply();
-                Intent intent = new Intent(mContext, MainActivity.class);
-                intent.putExtra("navigate_to_profile", true);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                mContext.startActivity(intent);
+                if (isFragment) {
+                    Log.d("Test", mContext.toString());
+                    Bundle bundle = new Bundle();
+                    bundle.putString("profileId", user.getId());
+                    NavController navController = Navigation.findNavController((FragmentActivity) mContext, R.id.nav_host_fragment_activity_main);
+                    navController.navigate(R.id.navigation_searched_user, bundle);
+                }
+                else {
+                    Intent intent = new Intent(mContext, MainActivity.class);
+                    intent.putExtra("navigate_to_profile", true);
+                    intent.putExtra("profileId", user.getId());
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    mContext.startActivity(intent);
+                }
             }
         });
     }

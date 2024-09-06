@@ -35,7 +35,10 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
         NavigationUI.setupWithNavController(navView, navController);
         if (getIntent().getBooleanExtra("navigate_to_profile", false)) {
-            navController.navigate(R.id.navigation_searched_user);
+            String profileId = getIntent().getStringExtra("profileId");
+            Bundle bundle = new Bundle();
+            bundle.putString("profileId", profileId);
+            navController.navigate(R.id.navigation_searched_user, bundle);
         }
         navView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
             @Override

@@ -78,11 +78,6 @@ public class EditProfileActivity extends AppCompatActivity {
         bio = findViewById(R.id.editBio);
         progressBar = findViewById(R.id.indeterminateBar);
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (firebaseUser != null) {
-            Log.d(TAG, "Current User ID: " + firebaseUser.getUid());
-        } else {
-            Log.e(TAG, "FirebaseUser is null");
-        }
         storageRef = FirebaseStorage.getInstance().getReference("uploads");
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.getUid());

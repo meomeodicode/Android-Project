@@ -68,6 +68,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         username.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS", MODE_PRIVATE).edit();
+                editor.putString("profileid", post.getPublisher());
+                editor.apply();
+
                 NavController navController = Navigation.findNavController((FragmentActivity) mContext, R.id.nav_host_fragment_activity_main);
                 navController.navigate(R.id.navigation_search_user_profile);
             }

@@ -18,7 +18,7 @@
             android:paddingTop="20dp"
             android:orientation="vertical">
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/profile_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -30,13 +30,14 @@
                     android:id="@+id/profile_header_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
                     android:layout_marginRight="125dp">
 
                     <TextView
                         android:id="@+id/profile_username"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="lavainse"
+                        android:text="Username"
                         android:textStyle="bold"
                         android:textSize="30sp"
                         />
@@ -57,11 +58,12 @@
                     android:adjustViewBounds="true"
                     android:backgroundTint="@color/white"
                     android:contentDescription="Profile menu"
+                    android:layout_alignParentEnd="true"
                     android:scaleType="fitCenter"
                     android:layout_marginStart="67dp"
                     android:src="@drawable/baseline_menu_24" />
 
-            </LinearLayout>
+            </RelativeLayout>
 
             <LinearLayout
                 android:id="@+id/profile_top"
@@ -88,7 +90,7 @@
                         android:id="@+id/profile_display_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Lam Anh"
+                        android:text="/-/-/-/-/"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -96,7 +98,7 @@
                         android:id="@+id/profile_bio"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="/lav^zei/ - La"
+                        android:text="Not bio yet"
                         android:textSize="15sp"/>
                 </LinearLayout>
 
@@ -121,7 +123,7 @@
                             android:id="@+id/profile_posts_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="1"
+                            android:text="-"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
@@ -144,7 +146,7 @@
                             android:id="@+id/profile_followers_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="0"
+                            android:text="-"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
@@ -167,7 +169,7 @@
                             android:id="@+id/profile_following_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="1"
+                            android:text="-"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 

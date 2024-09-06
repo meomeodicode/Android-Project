@@ -21,7 +21,8 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:padding="8dp">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -39,8 +40,8 @@
                     android:layout_centerVertical="true"
                     android:layout_marginStart="10dp"
                     android:textStyle="bold"
-                    android:textSize="18sp"
-                    android:textColor="@color/gray"
+                    android:textSize="20sp"
+                    android:textColor="@color/black"
                     android:layout_toEndOf="@id/close"/>
 
                 <TextView
@@ -49,9 +50,9 @@
                     android:layout_marginRight="10dp"
                     android:text="SAVE"
                     android:id="@+id/save"
-                    android:textSize="16sp"
+                    android:textSize="18sp"
                     android:layout_centerVertical="true"
-                    android:textColor="@color/gray"
+                    android:textColor="@color/blue"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true" />
 

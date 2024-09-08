@@ -282,30 +282,23 @@ public class ProfileSearchedFragment extends Fragment {
 
     private void fetchPhoto() {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Posts");
-        Log.d("fetchPhoto", "Starting to fetch photos for profileId: " + profileId);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 postList.clear();
-                Log.d("fetchPhoto", "Cleared postList");
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Post post = snapshot.getValue(Post.class);
                     if (post != null) {
-                        Log.d("fetchPhoto", "Processing post: " + post.getPostImage() + ", Publisher: " + post.getPublisher());
                         if (post.getPublisher().equals(profileId)) {
                             postList.add(post);
-                            Log.d("fetchPhoto", "Added post to postList: " + post.getPostImage());
                         }
                     } else {
                         Log.d("fetchPhoto", "Post is null, skipping");
                     }
                 }
-                Log.d("fetchPhoto", "Post list size before reversing: " + postList.size());
                 Collections.reverse(postList);
                 Log.d("fetchPhoto", "Post list size after reversing: " + postList.size());
-
                 postThumbnailAdapter.notifyDataSetChanged();
-                Log.d("fetchPhoto", "Adapter notified of data change");
             }
 
             @Override
@@ -320,22 +313,36 @@ public class ProfileSearchedFragment extends Fragment {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                SharedPreferences postPrefs = getContext().getSharedPreferences("PREFS", MODE_PRIVATE);
-                String profileId = postPrefs.getString("profileid", "none");
+                if (getContext() == null) {
+                    return;
+                }
+                String profileId = ProfileSearchedFragment.this.profileId;
+                if (profileId == null || profileId.equals("none")) {
+                    Log.e("countPosts", "Profile ID is not available.");
+                    return;
+                }
                 int count = 0;
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Post post = snapshot.getValue(Post.class);
-                    if (post.getPublisher().equals(profileId)) {
-                        count++;
+                    if (post != null && post.getPublisher() != null) {
+                        if (post.getPublisher().equals(profileId)) {
+                            count++;
+                        }
+                    } else {
+                        Log.d("countPosts", "Post or publisher is null, skipping this post.");
                     }
                 }
+                Log.d("countPosts", "Total posts found: " + count);
                 userPost.setText(String.valueOf(count));
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
+                Log.e("countPosts", "Failed to fetch posts: " + databaseError.getMessage());
             }
         });
     }
+
     private void fetchSavedPhotos() {
         if (!isCurrentUser)
             return;

@@ -164,7 +164,6 @@ public class EditProfileActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     Uri downloadUri = task.getResult();
                     String gottenImageUrl = downloadUri.toString();
-                    Log.d(TAG, "Image uploaded successfully: " + gottenImageUrl);
                     updateProfile(username.getText().toString(), bio.getText().toString(), gottenImageUrl);
                 } else {
                     Log.e(TAG, "Image upload failed for User ID: " + firebaseUser.getUid());

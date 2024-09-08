@@ -252,7 +252,7 @@
                 android:id="@+id/private_saved_posts_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Private"
+                android:text="Saved posts are private"
                 android:textSize="18sp"
                 android:textAlignment="center"
                 android:visibility="gone"

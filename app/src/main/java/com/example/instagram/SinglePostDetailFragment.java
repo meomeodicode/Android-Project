@@ -147,7 +147,6 @@ public class SinglePostDetailFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                // Handle error
             }
         });
     }

@@ -236,18 +236,14 @@ public class ProfileFragment extends Fragment {
                 fetchWeather(location, weatherTextView);
             } else {
                 Log.d("ProfileFragment", "Location is null");
-                Toast.makeText(getContext(), "Location not found", Toast.LENGTH_SHORT).show();
             }
         }).addOnFailureListener(e -> {
             Log.e("ProfileFragment", "Failed to get location", e);
-            Toast.makeText(getContext(), "Failed to get location", Toast.LENGTH_SHORT).show();
         });
     }
 
     private void fetchWeather(Location location, TextView weatherTextView) {
-        Log.d("ProfileFragment", "Attempting to fetch weather data...");
         String locationString = "Latitude: " + location.getLatitude() + ", Longitude: " + location.getLongitude();
-        Log.d("ProfileFragment", "Current location: " + locationString);
         String apiKey = "68153743fb38ff08a172a5174f1d184c";
         String url = "https://api.openweathermap.org/data/2.5/weather?lat=" + location.getLatitude() + "&lon=" + location.getLongitude() + "&appid=" + apiKey + "&units=metric";
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, response -> {

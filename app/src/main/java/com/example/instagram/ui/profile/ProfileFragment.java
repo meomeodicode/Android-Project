@@ -246,6 +246,8 @@ public class ProfileFragment extends Fragment {
 
     private void fetchWeather(Location location, TextView weatherTextView) {
         Log.d("ProfileFragment", "Attempting to fetch weather data...");
+        String locationString = "Latitude: " + location.getLatitude() + ", Longitude: " + location.getLongitude();
+        Log.d("ProfileFragment", "Current location: " + locationString);
         String apiKey = "68153743fb38ff08a172a5174f1d184c";
         String url = "https://api.openweathermap.org/data/2.5/weather?lat=" + location.getLatitude() + "&lon=" + location.getLongitude() + "&appid=" + apiKey + "&units=metric";
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, response -> {
@@ -254,7 +256,7 @@ public class ProfileFragment extends Fragment {
                 double tempCelsius = main.getDouble("temp");
                 JSONArray weatherArray = response.getJSONArray("weather");
                 String weatherCondition = weatherArray.getJSONObject(0).getString("description");
-                String weatherInfo = "Weather: " + weatherCondition + ", " + tempCelsius + "°C";
+                String weatherInfo = "Condition " + weatherCondition + ", " + tempCelsius + "°C";
                 weatherTextView.setText(weatherInfo);
             } catch (JSONException e) {
                 Log.e("ProfileFragment", "Failed to parse weather data", e);

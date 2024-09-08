@@ -18,52 +18,54 @@
             android:paddingTop="20dp"
             android:orientation="vertical">
 
-            <RelativeLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/profile_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                >
+                android:paddingRight="20dp">
 
                 <LinearLayout
                     android:id="@+id/profile_header_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginRight="125dp">
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
                         android:id="@+id/profile_username"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Username"
-                        android:textStyle="bold"
+                        android:text="lavainse"
                         android:textSize="30sp"
-                        />
+                        android:textStyle="bold" />
 
                     <ImageView
                         android:id="@+id/profile_dropdown_icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/baseline_keyboard_arrow_down_24"
+
                         android:layout_marginTop="10dp"
-                        />
+                        android:src="@drawable/baseline_keyboard_arrow_down_24" />
                 </LinearLayout>
 
                 <ImageButton
                     android:id="@+id/profile_menu_button"
                     android:layout_width="55dp"
                     android:layout_height="55dp"
+                    android:layout_marginStart="50dp"
                     android:adjustViewBounds="true"
                     android:backgroundTint="@color/white"
                     android:contentDescription="Profile menu"
-                    android:layout_alignParentEnd="true"
                     android:scaleType="fitCenter"
-                    android:layout_marginStart="67dp"
-                    android:src="@drawable/baseline_menu_24" />
+                    android:src="@drawable/baseline_menu_24"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.853"
+                    app:layout_constraintStart_toEndOf="@id/profile_header_name"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            </RelativeLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
                 android:id="@+id/profile_top"
@@ -90,7 +92,7 @@
                         android:id="@+id/profile_display_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="/-/-/-/-/"
+                        android:text="Lam Anh"
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -98,7 +100,7 @@
                         android:id="@+id/profile_bio"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Not bio yet"
+                        android:text="/lav^zei/ - La"
                         android:textSize="15sp"/>
                 </LinearLayout>
 
@@ -123,7 +125,7 @@
                             android:id="@+id/profile_posts_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="-"
+                            android:text="1"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
@@ -146,7 +148,7 @@
                             android:id="@+id/profile_followers_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="-"
+                            android:text="0"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
@@ -169,7 +171,7 @@
                             android:id="@+id/profile_following_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="-"
+                            android:text="1"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
@@ -242,7 +244,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

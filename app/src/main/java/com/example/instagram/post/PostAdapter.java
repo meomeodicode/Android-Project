@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
@@ -61,19 +62,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         Post post = postList.get(position);
 
         Glide.with(mContext).load(post.getPostImage()).into(holder.postImageResource);
-        //String localImageUrl = post.getPostImage();
-        //Log.d("ImageURL", "1. Local URL: " + localImageUrl);
-
         TextView username = holder.itemView.findViewById(R.id.text_username);
         username.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS", MODE_PRIVATE).edit();
-                editor.putString("profileid", post.getPublisher());
-                editor.apply();
-
+                Bundle bundle = new Bundle();
+                bundle.putString("profileId", post.getPublisher());
                 NavController navController = Navigation.findNavController((FragmentActivity) mContext, R.id.nav_host_fragment_activity_main);
-                navController.navigate(R.id.navigation_search_user_profile);
+                navController.navigate(R.id.navigation_searched_user, bundle);
             }
         });
         if(post.getDescription() == null || post.getDescription().equals("")) {

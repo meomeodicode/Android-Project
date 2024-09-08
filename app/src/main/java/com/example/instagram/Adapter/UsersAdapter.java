@@ -1,7 +1,10 @@
 package com.example.instagram.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +17,8 @@ import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.example.instagram.MainActivity;
 import com.example.instagram.Model.UserModel;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -61,15 +66,33 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         UserModel user = Users.get(userHolder.getAdapterPosition());
         userHolder.username.setText(user.getUsername());
         userHolder.email.setText(user.getEmail());
+        if (user.getImageurl() != null && !user.getImageurl().isEmpty()) {
+            Glide.with(userHolder.itemView.getContext())
+                    .load(user.getImageurl())
+                    .placeholder(R.drawable.ic_profile_filled)
+                    .error(R.drawable.ic_profile_filled)
+                    .circleCrop()
+                    .into(userHolder.imageProfile);
+        } else {
+            userHolder.imageProfile.setImageResource(R.drawable.ic_profile_filled);
+        }
         userHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS", MODE_PRIVATE).edit();
-                editor.putString("profileid", user.getId());
-                editor.apply();
-
-                NavController navController = Navigation.findNavController((FragmentActivity) mContext, R.id.nav_host_fragment_activity_main);
-                navController.navigate(R.id.navigation_search_user_profile);
+                if (isFragment) {
+                    Log.d("Test", mContext.toString());
+                    Bundle bundle = new Bundle();
+                    bundle.putString("profileId", user.getId());
+                    NavController navController = Navigation.findNavController((FragmentActivity) mContext, R.id.nav_host_fragment_activity_main);
+                    navController.navigate(R.id.navigation_searched_user, bundle);
+                }
+                else {
+                    Intent intent = new Intent(mContext, MainActivity.class);
+                    intent.putExtra("navigate_to_profile", true);
+                    intent.putExtra("profileId", user.getId());
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    mContext.startActivity(intent);
+                }
             }
         });
     }
@@ -78,16 +101,3 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.UserViewHold
         return Users.size();
     }
 }
-
-    /*
-    private void addNotification(String userid) {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications").child(userid);
-
-        HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("userid", firebaseUser.getUid());
-        hashMap.put("text", "started following you");
-        hashMap.put("postid", "");
-        hashMap.put("ispost", false);
-
-        reference.push().setValue(hashMap);
-    }*/

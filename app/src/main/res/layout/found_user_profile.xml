@@ -55,7 +55,7 @@
                         android:id="@+id/profile_username_2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="lavainse"
+                        android:text="Username"
                         android:textStyle="bold"
                         android:textSize="30sp" />
 
@@ -105,7 +105,7 @@
                         android:id="@+id/profile_display_name_2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Lam Anh"
+                        android:text=""
                         android:textSize="15sp"
                         android:textStyle="bold" />
 
@@ -113,7 +113,7 @@
                         android:id="@+id/profile_bio_2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="/lav^zei/ - La"
+                        android:text="Not bio yet."
                         android:textSize="15sp" />
                 </LinearLayout>
 
@@ -138,7 +138,7 @@
                             android:id="@+id/profile_posts_count_2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="72"
+                            android:text="-"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
@@ -161,7 +161,7 @@
                             android:id="@+id/profile_followers_count_2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="104"
+                            android:text="-"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
@@ -184,7 +184,7 @@
                             android:id="@+id/profile_following_count_2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="61"
+                            android:text="-"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
@@ -236,7 +236,8 @@
                 android:layout_height="wrap_content"
                 android:background="@color/white"
                 app:tabGravity="fill"
-                app:tabIndicatorColor="@android:color/white"
+                app:tabIndicatorColor="@android:color/black"
+                app:tabIndicatorHeight="4dp"
                 app:tabMode="fixed"
                 app:tabSelectedTextColor="@android:color/black"
                 app:tabTextColor="@color/grey">

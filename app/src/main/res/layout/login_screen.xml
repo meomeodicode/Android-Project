@@ -67,19 +67,4 @@
             android:text="Create new account" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/pleaseWait"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/progressBar"
-        android:layout_alignRight="@+id/progressBar"
-        android:layout_alignBottom="@+id/progressBar"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
-        android:layout_marginBottom="-29dp"
-        android:gravity="center"
-        android:text="Please wait..."
-        android:textColor="@color/black"
-        android:textSize="20sp" />
-
 </RelativeLayout>

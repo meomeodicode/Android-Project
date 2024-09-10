@@ -268,13 +268,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         reference.push().setValue(hashMap);
     }
 
-    private void deleteNotifications(final String postid, String userid){
+    private void deleteNotifications(final String postid, String userid) {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications").child(userid);
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    if (snapshot.child("postid").getValue().equals(postid)){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Object postIdValue = snapshot.child("postid").getValue();
+                    if (postIdValue != null && postIdValue.equals(postid)) {
                         snapshot.getRef().removeValue()
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
@@ -285,12 +286,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     }
                 }
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
             }
         });
     }
+
 
     private void isSaved(String postId, ImageView imageView) {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();

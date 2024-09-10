@@ -277,7 +277,12 @@ public class ProfileFragment extends Fragment {
     private void updateUI() {
         username.setText(displayedUser.getUsername() != null ? displayedUser.getUsername() : "No username");
         userBio.setText(displayedUser.getBio() != null ? displayedUser.getBio() : "No bio available");
-        Glide.with(getContext()).load(displayedUser.getImageurl()).into(avatar);
+        if(displayedUser.getImageurl() == null || displayedUser.getImageurl().isEmpty()){
+            avatar.setImageResource(R.drawable.ic_profile_filled);
+        }
+        else {
+            Glide.with(getContext()).load(displayedUser.getImageurl()).into(avatar);
+        }
         if (displayedUser != null & displayedUser.getId() != null) {
             fetchFollowingCount();
             fetchFollowerCount();

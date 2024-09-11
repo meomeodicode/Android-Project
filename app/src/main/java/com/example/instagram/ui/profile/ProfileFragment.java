@@ -214,8 +214,11 @@ public class ProfileFragment extends Fragment {
         View bottomSheetView = LayoutInflater.from(getContext()).inflate(R.layout.profile_menu, null);
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
         bottomSheetDialog.setContentView(bottomSheetView);
+        TextView email = bottomSheetView.findViewById(R.id.user_email_in_menu);
         Button changePass = bottomSheetView.findViewById(R.id.btn_change_password);
         Button logout = bottomSheetView.findViewById(R.id.btn_logout);
+
+        email.setText(currentUser.getEmail());
         changePass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

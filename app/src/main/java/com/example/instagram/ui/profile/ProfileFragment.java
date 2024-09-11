@@ -272,23 +272,31 @@ public class ProfileFragment extends Fragment {
         View bottomSheetView = LayoutInflater.from(getContext()).inflate(R.layout.profile_menu, null);
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
         bottomSheetDialog.setContentView(bottomSheetView);
-
+        TextView email = bottomSheetView.findViewById(R.id.user_email_in_menu);
+        TextView weather = bottomSheetView.findViewById(R.id.profile_weather);
         Button changePass = bottomSheetView.findViewById(R.id.btn_change_password);
         Button logout = bottomSheetView.findViewById(R.id.btn_logout);
-        TextView weather = bottomSheetView.findViewById(R.id.profile_weather);
         fetchLocationAndWeather(weather);
-        changePass.setOnClickListener(v -> {
-            Intent intent = new Intent(getContext(), ForgotPasswordActivity.class);
-            startActivity(intent);
-            getActivity().finish();
-            bottomSheetDialog.dismiss();
+        email.setText(currentUser.getEmail());
+        changePass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), ForgotPasswordActivity.class);
+                startActivity(intent);
+                getActivity().finish();
+                bottomSheetDialog.dismiss();
+            }
         });
-        logout.setOnClickListener(v -> {
-            FirebaseAuth.getInstance().signOut();
-            Intent intent = new Intent(getContext(), LoginActivity.class);
-            startActivity(intent);
-            getActivity().finish();
-            bottomSheetDialog.dismiss();
+
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(getContext(), LoginActivity.class);
+                startActivity(intent);
+                getActivity().finish();
+                bottomSheetDialog.dismiss();
+            }
         });
 
         bottomSheetDialog.show();

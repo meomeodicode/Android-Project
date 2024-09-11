@@ -18,6 +18,16 @@
         android:src="@drawable/app_icon" />
 
     <TextView
+        android:id="@+id/user_email_in_menu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Weather"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:layout_gravity="center"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
         android:id="@+id/profile_weather"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

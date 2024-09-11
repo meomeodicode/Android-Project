@@ -5,13 +5,13 @@ import static android.content.Context.MODE_PRIVATE;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.instagram.CommentActivity;
-import com.example.instagram.FollowListActivity;
 import com.example.instagram.Model.UserModel;
 import com.example.instagram.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -63,19 +62,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         Post post = postList.get(position);
 
         Glide.with(mContext).load(post.getPostImage()).into(holder.postImageResource);
-        //String localImageUrl = post.getPostImage();
-        //Log.d("ImageURL", "1. Local URL: " + localImageUrl);
-
         TextView username = holder.itemView.findViewById(R.id.text_username);
         username.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Bundle bundle = new Bundle();
-                    bundle.putString("profileId", post.getPublisher());
-                    NavController navController = Navigation.findNavController((FragmentActivity) mContext, R.id.nav_host_fragment_activity_main);
-                    navController.navigate(R.id.navigation_searched_user, bundle);
-                }
-            });
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putString("profileId", post.getPublisher());
+                NavController navController = Navigation.findNavController((FragmentActivity) mContext, R.id.nav_host_fragment_activity_main);
+                navController.navigate(R.id.navigation_searched_user, bundle);
+            }
+        });
         if(post.getDescription() == null || post.getDescription().equals("")) {
             holder.description.setVisibility(View.GONE);
         }
@@ -96,15 +92,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         getComment(post.getPostId(), holder.comments);
         isSaved(post.getPostId(), holder.save);
 
-        holder.likes.setOnClickListener(new View.OnClickListener() {
-            @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(mContext, FollowListActivity.class);
-                    intent.putExtra("id", post.getPostId());
-                    intent.putExtra("title", "likes");
-                    mContext.startActivity(intent);
-                }
-            });
         holder.like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -281,13 +268,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         reference.push().setValue(hashMap);
     }
 
-    private void deleteNotifications(final String postid, String userid){
+    private void deleteNotifications(final String postid, String userid) {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications").child(userid);
         reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
-                    if (snapshot.child("postid").getValue().equals(postid)){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Object postIdValue = snapshot.child("postid").getValue();
+                    if (postIdValue != null && postIdValue.equals(postid)) {
                         snapshot.getRef().removeValue()
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
@@ -298,12 +286,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     }
                 }
             }
+
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
             }
         });
     }
+
 
     private void isSaved(String postId, ImageView imageView) {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();

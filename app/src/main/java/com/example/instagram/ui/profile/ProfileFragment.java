@@ -60,6 +60,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 public class ProfileFragment extends Fragment {
     private RecyclerView recyclerView, recyclerView_saves;
     private Button editProfile;
@@ -271,27 +272,35 @@ public class ProfileFragment extends Fragment {
         View bottomSheetView = LayoutInflater.from(getContext()).inflate(R.layout.profile_menu, null);
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
         bottomSheetDialog.setContentView(bottomSheetView);
-
+        TextView email = bottomSheetView.findViewById(R.id.user_email_in_menu);
         Button changePass = bottomSheetView.findViewById(R.id.btn_change_password);
         Button logout = bottomSheetView.findViewById(R.id.btn_logout);
-        TextView weather = bottomSheetView.findViewById(R.id.profile_weather);
-        fetchLocationAndWeather(weather);
-        changePass.setOnClickListener(v -> {
-            Intent intent = new Intent(getContext(), ForgotPasswordActivity.class);
-            startActivity(intent);
-            getActivity().finish();
-            bottomSheetDialog.dismiss();
+
+        email.setText(currentUser.getEmail());
+        changePass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), ForgotPasswordActivity.class);
+                startActivity(intent);
+                getActivity().finish();
+                bottomSheetDialog.dismiss();
+            }
         });
-        logout.setOnClickListener(v -> {
-            FirebaseAuth.getInstance().signOut();
-            Intent intent = new Intent(getContext(), LoginActivity.class);
-            startActivity(intent);
-            getActivity().finish();
-            bottomSheetDialog.dismiss();
+
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(getContext(), LoginActivity.class);
+                startActivity(intent);
+                getActivity().finish();
+                bottomSheetDialog.dismiss();
+            }
         });
 
         bottomSheetDialog.show();
     }
+
     private void loadUserData() {
         SharedPreferences prefs = getContext().getSharedPreferences("PREFS", MODE_PRIVATE);
         String profileId = prefs.getString("profileid", "none");
@@ -329,7 +338,12 @@ public class ProfileFragment extends Fragment {
     private void updateUI() {
         username.setText(displayedUser.getUsername() != null ? displayedUser.getUsername() : "No username");
         userBio.setText(displayedUser.getBio() != null ? displayedUser.getBio() : "No bio available");
-        Glide.with(getContext()).load(displayedUser.getImageurl()).into(avatar);
+        if(displayedUser.getImageurl() == null || displayedUser.getImageurl().isEmpty()){
+            avatar.setImageResource(R.drawable.ic_profile_filled);
+        }
+        else {
+            Glide.with(getContext()).load(displayedUser.getImageurl()).into(avatar);
+        }
         if (displayedUser != null & displayedUser.getId() != null) {
             fetchFollowingCount();
             fetchFollowerCount();

@@ -10,6 +10,8 @@
         android:id="@+id/app_logo"
         android:layout_width="115dp"
         android:layout_height="109dp"
+        android:scaleX="1.5"
+        android:scaleY="1.5"
         android:layout_gravity="center"
         android:layout_marginBottom="15dp"
         android:contentDescription="App Logo"

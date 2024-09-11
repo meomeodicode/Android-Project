@@ -163,8 +163,6 @@ public class PostActivity extends AppCompatActivity {
                         reference.child(postId).setValue(hashMap);
 
                         progressDialog.dismiss();
-                        Toast.makeText(PostActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
-
                         startActivity(new Intent(PostActivity.this, MainActivity.class));
                         finish();
                     } else {

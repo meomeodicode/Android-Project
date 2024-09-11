@@ -2,8 +2,11 @@ package com.example.instagram.ui.profile;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,11 +20,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.example.instagram.Adapter.Photo;
 import com.example.instagram.FollowListActivity;
@@ -31,6 +40,8 @@ import com.example.instagram.MainActivity;
 import com.example.instagram.Model.UserModel;
 import com.example.instagram.R;
 import com.example.instagram.post.Post;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.tabs.TabLayout;
@@ -41,6 +52,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,6 +75,7 @@ public class ProfileFragment extends Fragment {
     private List<Post> postList;
     private List<Post> postList_saves;
     private Photo postThumbnailAdapter, postThumbnailAdapterSaves;
+    private FusedLocationProviderClient fusedLocationClient;
     private boolean flag;
 
     @Override
@@ -178,6 +194,7 @@ public class ProfileFragment extends Fragment {
         shareLink = view.findViewById(R.id.profile_share_link);
         userBio = view.findViewById(R.id.profile_bio);
         editProfile = view.findViewById(R.id.profile_edit_button);
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
         editProfile.setOnClickListener(v -> initEdit());
         postList = new ArrayList<>();
         postList_saves = new ArrayList<>();
@@ -209,35 +226,69 @@ public class ProfileFragment extends Fragment {
         editor.putString("profileid", newProfileId);
         editor.apply();
     }
+    private void fetchLocationAndWeather(TextView weatherTextView) {
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+            return;
+        }
+
+        fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
+            if (location != null) {
+                fetchWeather(location, weatherTextView);
+            } else {
+                Log.d("ProfileFragment", "Location is null");
+            }
+        }).addOnFailureListener(e -> {
+            Log.e("ProfileFragment", "Failed to get location", e);
+        });
+    }
+
+    private void fetchWeather(Location location, TextView weatherTextView) {
+        String locationString = "Latitude: " + location.getLatitude() + ", Longitude: " + location.getLongitude();
+        String apiKey = "68153743fb38ff08a172a5174f1d184c";
+        String url = "https://api.openweathermap.org/data/2.5/weather?lat=" + location.getLatitude() + "&lon=" + location.getLongitude() + "&appid=" + apiKey + "&units=metric";
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, response -> {
+            try {
+                JSONObject main = response.getJSONObject("main");
+                double tempCelsius = main.getDouble("temp");
+                JSONArray weatherArray = response.getJSONArray("weather");
+                String weatherCondition = weatherArray.getJSONObject(0).getString("description");
+                String weatherInfo = "Condition " + weatherCondition + ", " + tempCelsius + "°C";
+                weatherTextView.setText(weatherInfo);
+            } catch (JSONException e) {
+                Log.e("ProfileFragment", "Failed to parse weather data", e);
+                weatherTextView.setText("Failed to parse weather data");
+            }
+        }, error -> {
+            Log.e("ProfileFragment", "Failed to retrieve weather data", error);
+            weatherTextView.setText("Failed to retrieve weather data");
+        });
+
+        RequestQueue queue = Volley.newRequestQueue(getContext());
+        queue.add(jsonObjectRequest);
+    }
 
     private void openBottomSheetMenu() {
         View bottomSheetView = LayoutInflater.from(getContext()).inflate(R.layout.profile_menu, null);
         BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
         bottomSheetDialog.setContentView(bottomSheetView);
-        TextView email = bottomSheetView.findViewById(R.id.user_email_in_menu);
+
         Button changePass = bottomSheetView.findViewById(R.id.btn_change_password);
         Button logout = bottomSheetView.findViewById(R.id.btn_logout);
-
-        email.setText(currentUser.getEmail());
-        changePass.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), ForgotPasswordActivity.class);
-                startActivity(intent);
-                getActivity().finish();
-                bottomSheetDialog.dismiss();
-            }
+        TextView weather = bottomSheetView.findViewById(R.id.profile_weather);
+        fetchLocationAndWeather(weather);
+        changePass.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), ForgotPasswordActivity.class);
+            startActivity(intent);
+            getActivity().finish();
+            bottomSheetDialog.dismiss();
         });
-
-        logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(getContext(), LoginActivity.class);
-                startActivity(intent);
-                getActivity().finish();
-                bottomSheetDialog.dismiss();
-            }
+        logout.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            Intent intent = new Intent(getContext(), LoginActivity.class);
+            startActivity(intent);
+            getActivity().finish();
+            bottomSheetDialog.dismiss();
         });
 
         bottomSheetDialog.show();

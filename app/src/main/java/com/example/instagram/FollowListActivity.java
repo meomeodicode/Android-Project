@@ -42,11 +42,14 @@ public class FollowListActivity extends AppCompatActivity {
         }
 
         Log.d("FollowListActivity", "Received id: " + id + ", title: " + title);
-
         Toolbar toolbar = findViewById(R.id.toolbar_followList);
         setSupportActionBar(toolbar);
         if(title.equals("followers")) {
             getSupportActionBar().setTitle("Followers");
+        }
+        else if (title.equals("likes"))
+        {
+            getSupportActionBar().setTitle("Likes");
         }
         else {
             getSupportActionBar().setTitle("Following");

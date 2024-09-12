@@ -70,6 +70,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
                 return true;
             }
         });
+
 //        holder.comment.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -151,5 +152,4 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             }
         });
     }
-
 }

@@ -390,13 +390,13 @@ public class ProfileSearchedFragment extends Fragment {
         } else {
             userFollowingRef.setValue(true);
             userFollowersRef.setValue(true);
-            addNotification();
+            addNotification(displayedUser.getId());
         }
         loadUserData();
     }
 
-    private void addNotification() {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications").child(currentUser.getUid());
+    private void addNotification(String userid){
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications").child(userid);
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("userID", currentUser.getUid());
         hashMap.put("description", "started following you");
@@ -404,5 +404,6 @@ public class ProfileSearchedFragment extends Fragment {
         hashMap.put("isPost", false);
         reference.push().setValue(hashMap);
     }
+
 
 }

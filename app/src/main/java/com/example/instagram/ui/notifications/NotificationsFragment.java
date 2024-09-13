@@ -44,24 +44,24 @@ public class NotificationsFragment extends Fragment {
         return view;
     }
 
-    private void readNotifications(){
+    private void readNotifications() {
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications").child(firebaseUser.getUid());
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 notificationList.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Noti notification = snapshot.getValue(Noti.class);
-                    notificationList.add(notification);
+                    if (notification != null && !notification.getUserID().equals(firebaseUser.getUid())) {
+                        notificationList.add(notification);
+                    }
                 }
                 Collections.reverse(notificationList);
                 notificationAdapter.notifyDataSetChanged();
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
             }
         });
     }

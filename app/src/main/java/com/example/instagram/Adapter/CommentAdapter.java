@@ -56,6 +56,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
         Comment comment = mComment.get(position);
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         holder.comment.setText(comment.getComment());
         getUserInfo(holder.imageProfile, holder.username, comment.getPublisher());
